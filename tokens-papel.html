@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Viriato · Proposta — sistema de cor «papel»</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* ─── TIER 1 · PRIMITIVAS ───────────────────────────────────── */
+
+  /* papel — off-white quente, baixa croma. Nunca #FFF como base:
+     branco puro ao lado de fotografia lê-se clínico e revela o ruído do JPEG */
+  --papel-0:#FFFFFF;   /* só para cartões que precisam de levantar da página */
+  --papel-1:#FAF7F2;   /* base da página */
+  --papel-2:#F3EFE8;   /* banda alternada / secção recuada */
+  --papel-3:#EAE4DA;   /* poços, inputs, base de placeholder */
+
+  /* tinta — preto quente, nunca #000 (lê-se como buraco sobre papel quente) */
+  --tinta-1:#191714;   /* títulos, ink primário        16.0:1 sobre papel-1 */
+  --tinta-2:#4E4941;   /* corpo de texto                8.3:1 */
+  --tinta-3:#6F685D;   /* meta, labels, legendas        5.1:1 — passa AA */
+  --tinta-4:#A79F92;   /* NÃO-TEXTO: filetes, desativado 2.5:1 */
+
+  /* filetes — tinta a baixa opacidade, nunca cinza neutro */
+  --linha:rgba(25,23,20,.10);
+  --linha-forte:rgba(25,23,20,.20);
+  --linha-tinta:rgba(25,23,20,.38);
+
+  /* sinal — terracota. Único acento cromático do sistema */
+  --sinal:#A4462E;              /* 5.6:1 sobre papel-1 — passa AA */
+  --sinal-fundo:rgba(164,70,46,.08);
+
+  /* sombra — curta e quente. A sombra longa e preta do tema escuro
+     lê-se como sujidade sobre papel */
+  --sombra-1:0 1px 2px rgba(25,23,20,.05);
+  --sombra-2:0 2px 8px rgba(25,23,20,.06),0 12px 28px rgba(25,23,20,.07);
+
+  /* ─── TIER 2 · SEMÂNTICAS (o que o CSS usa) ──────────────────── */
+  --fundo:var(--papel-1);
+  --fundo-alt:var(--papel-2);
+  --fundo-eleva:var(--papel-0);
+  --fundo-poco:var(--papel-3);
+  --texto:var(--tinta-1);
+  --texto-2:var(--tinta-2);
+  --texto-3:var(--tinta-3);
+  --texto-fraco:var(--tinta-4);
+
+  /* ─── TIER 3 · SOBRE-IMAGEM ──────────────────────────────────── */
+  /* escala invertida separada: texto sobre foto nunca usa a tinta da página */
+  --sobre-img:#FFFFFF;
+  --sobre-img-2:rgba(255,255,255,.74);
+  --linha-img:rgba(255,255,255,.28);
+  --veu-img:linear-gradient(to top,rgba(20,18,15,.80) 0%,rgba(20,18,15,.34) 38%,transparent 72%);
+
+  --max:1240px;--r:10px;
+  --ease-out:cubic-bezier(.23,1,.32,1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--fundo);color:var(--texto);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{line-height:1.08;font-weight:500;letter-spacing:-.026em}
+h1{font-size:clamp(2.4rem,5vw,3.8rem);font-weight:400;letter-spacing:-.034em}
+h2{font-size:1.9rem}
+h3{font-size:1.05rem}
+p{color:var(--texto-2)}
+a{color:inherit;text-decoration:none}
+.lead{font-size:1.05rem;max-width:62ch;margin-top:18px}
+.kicker{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--texto-3);font-weight:600;display:block;margin-bottom:16px}
+
+.doc-head{padding:88px 0 56px;border-bottom:1px solid var(--linha)}
+.sec{padding:64px 0;border-bottom:1px solid var(--linha)}
+.sec-head{margin-bottom:34px;max-width:66ch}
+.sec-head p{margin-top:12px;font-size:.94rem}
+
+/* ── swatches ── */
+.ramp{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.sw{border:1px solid var(--linha);border-radius:var(--r);overflow:hidden;background:var(--fundo-eleva)}
+.sw .chip{height:96px;display:flex;align-items:flex-end;padding:10px 12px;font-size:.68rem;letter-spacing:.06em}
+.sw .info{padding:12px 14px 14px}
+.sw .tok{font-size:.78rem;font-weight:500;font-feature-settings:'tnum'}
+.sw .hex{font-size:.72rem;color:var(--texto-3);letter-spacing:.04em;margin-top:2px}
+.sw .use{font-size:.76rem;color:var(--texto-2);margin-top:9px;line-height:1.4}
+.sw .ratio{display:inline-block;margin-top:9px;font-size:.66rem;letter-spacing:.05em;padding:3px 7px;border-radius:100px;border:1px solid var(--linha-forte);color:var(--texto-3)}
+.sw .ratio.pass{border-color:rgba(164,70,46,.34);color:var(--sinal)}
+
+/* ── componentes ── */
+.demo{background:var(--fundo-alt);border:1px solid var(--linha);border-radius:var(--r);padding:34px;margin-top:8px}
+.demo+.demo{margin-top:16px}
+.demo-lbl{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--texto-3);font-weight:600;margin-bottom:20px}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:100px;font-size:.85rem;font-weight:500;border:1px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap;
+  transition:transform 160ms var(--ease-out),border-color 200ms ease,background-color 200ms ease,box-shadow 240ms ease}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--tinta-1);color:var(--papel-1)}
+.btn-p:hover{background:#000;box-shadow:var(--sombra-2)}
+.btn-s{border-color:var(--linha-forte);color:var(--texto)}
+.btn-s:hover{border-color:var(--linha-tinta);background-color:rgba(25,23,20,.035)}
+.btn-t{color:var(--sinal);padding-left:0;padding-right:0}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+
+/* header pill sobre papel */
+.pill{position:relative;border-radius:100px;padding:0 10px 0 26px;
+  background:rgba(255,255,255,.72);
+  -webkit-backdrop-filter:blur(20px) saturate(140%);backdrop-filter:blur(20px) saturate(140%);
+  border:1px solid rgba(25,23,20,.09);
+  box-shadow:0 1px 2px rgba(25,23,20,.04),0 10px 26px rgba(25,23,20,.07)}
+.pill .row{display:flex;align-items:center;justify-content:space-between;height:58px}
+.logo{font-weight:600;letter-spacing:.2em;font-size:.9rem}
+.logo span{color:var(--sinal)}
+.menu{display:flex;gap:26px}
+.menu a{position:relative;font-size:.84rem;color:var(--texto-2);transition:color 200ms ease}
+.menu a.active{color:var(--texto)}
+.menu a::after{content:'';position:absolute;left:0;right:0;bottom:-6px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform 260ms var(--ease-out)}
+.menu a:hover::after,.menu a.active::after{transform:scaleX(1)}
+
+/* snav */
+.snav{display:flex;gap:28px;align-items:center;margin-bottom:24px}
+.snav a{position:relative;font-size:.82rem;color:var(--texto-3);padding-bottom:7px;transition:color 200ms ease}
+.snav a:hover{color:var(--texto-2)}
+.snav a::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform 300ms var(--ease-out)}
+.snav a:hover::after{transform:scaleX(1)}
+.snav a.on{color:var(--texto)}
+.snav a.on::after{background:var(--sinal);transform:scaleX(1)}
+
+/* fotografia simulada — sem imagens reais, um proxy de valor médio */
+.foto{position:relative;aspect-ratio:16/9;border-radius:var(--r);overflow:hidden;background:
+  radial-gradient(120% 90% at 22% 18%,#C9BBA6 0%,#A3937E 38%,#6E6455 68%,#3E382E 100%)}
+.foto::after{content:'FOTOGRAFIA';position:absolute;inset:0;display:grid;place-items:center;
+  font-size:.62rem;letter-spacing:.22em;color:rgba(255,255,255,.42)}
+
+/* tratamento A — texto sobre a imagem */
+.cardA .veil{position:absolute;inset:0;background:var(--veu-img);z-index:1}
+.cardA .body{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:32px 34px;color:var(--sobre-img)}
+.cardA h3{font-size:1.7rem;margin-bottom:8px}
+.cardA .meta{display:flex;align-items:center;gap:13px;font-size:.85rem;color:var(--sobre-img-2)}
+.cardA .meta .cta{color:var(--sobre-img);font-weight:500}
+
+/* tratamento B — legenda em tinta sobre papel, foto intocada */
+.cardB .body{padding:20px 2px 0}
+.cardB h3{font-size:1.25rem;margin-bottom:7px}
+.cardB .meta{display:flex;align-items:center;gap:13px;font-size:.85rem;color:var(--texto-3)}
+.cardB .meta .cta{color:var(--sinal);font-weight:500}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+
+/* tiers */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.tier{border:1px solid var(--linha);border-radius:var(--r);background:var(--fundo-eleva);padding:26px;box-shadow:var(--sombra-1)}
+.tier.feat{border-color:rgba(164,70,46,.30);background:linear-gradient(180deg,var(--sinal-fundo),transparent 42%),var(--fundo-eleva)}
+.tier h3{margin-bottom:4px}
+.tier .for{font-size:.85rem;color:var(--texto-3);margin-bottom:16px}
+.tier ul{list-style:none;font-size:.86rem;color:var(--texto-2)}
+.tier li{padding:7px 0;border-top:1px solid var(--linha)}
+.badge{display:inline-block;font-size:.66rem;letter-spacing:.08em;padding:4px 10px;border-radius:100px;border:1px solid rgba(164,70,46,.34);color:var(--sinal);background:var(--sinal-fundo);margin-left:8px}
+
+/* placeholders re-tokenizados */
+.ph{color:var(--texto-3);border-bottom:1px dashed var(--tinta-4)}
+.phbox{background:repeating-linear-gradient(135deg,rgba(25,23,20,.035) 0 14px,transparent 14px 28px),var(--papel-3);
+  border:1px solid var(--linha);display:grid;place-items:center;color:var(--texto-3);
+  font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;padding:16px;aspect-ratio:16/9;border-radius:var(--r)}
+
+/* acentos alternativos */
+.alts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.alt{border:1px solid var(--linha);border-radius:var(--r);padding:24px;background:var(--fundo-eleva)}
+.alt .bar{height:5px;border-radius:100px;margin-bottom:18px}
+.alt h4{font-size:.98rem;margin-bottom:6px}
+.alt .hex{font-size:.72rem;color:var(--texto-3);letter-spacing:.04em}
+.alt p{font-size:.83rem;margin-top:10px;line-height:1.5}
+.alt .rec{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--sinal);margin-top:14px;display:block}
+
+/* tabela de migração */
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{text-align:left;font-weight:500;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--texto-3);padding:0 14px 12px 0;border-bottom:1px solid var(--linha-forte)}
+td{padding:12px 14px 12px 0;border-bottom:1px solid var(--linha);color:var(--texto-2);vertical-align:top}
+td.t{color:var(--texto);white-space:nowrap;font-weight:500}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82em;background:var(--papel-3);padding:2px 6px;border-radius:4px;color:var(--tinta-1)}
+.scroll{overflow-x:auto}
+
+.note{border-left:2px solid var(--sinal);padding:2px 0 2px 18px;margin-top:26px;font-size:.9rem;color:var(--texto-2);max-width:70ch}
+.note b{color:var(--texto);font-weight:500}
+
+@media(max-width:900px){.two,.tiers,.alts{grid-template-columns:1fr}.menu{display:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap doc-head">
+  <span class="kicker">Viriato · Setores / Imobiliário</span>
+  <h1>Sistema de cor «papel»</h1>
+  <p class="lead">Proposta para substituir os tokens azul/roxo. A premissa: quando entram fotografias reais de arquitetura, a página tem de <em>recuar</em>. O papel e a tinta não competem com a imagem — emolduram-na.</p>
+</div>
+
+<!-- PAPEL -->
+<section class="sec"><div class="wrap">
+  <div class="sec-head">
+    <span class="kicker">Tier 1 · primitivas</span>
+    <h2>Papel</h2>
+    <p>Quatro superfícies, todas com um leve enviesamento quente. Branco puro fica reservado a cartões que precisam de levantar — como base de página revela o ruído de compressão das fotografias e lê-se clínico.</p>
+  </div>
+  <div class="ramp">
+    <div class="sw"><div class="chip" style="background:#FFFFFF;border-bottom:1px solid var(--linha);color:var(--texto-3)">papel-0</div>
+      <div class="info"><div class="tok">--papel-0</div><div class="hex">#FFFFFF</div><div class="use">Cartões elevados, superfícies que têm de destacar do fundo.</div></div></div>
+    <div class="sw"><div class="chip" style="background:#FAF7F2;border-bottom:1px solid var(--linha);color:var(--texto-3)">papel-1</div>
+      <div class="info"><div class="tok">--papel-1</div><div class="hex">#FAF7F2</div><div class="use">Base da página. O «papel» propriamente dito.</div></div></div>
+    <div class="sw"><div class="chip" style="background:#F3EFE8;border-bottom:1px solid var(--linha);color:var(--texto-3)">papel-2</div>
+      <div class="info"><div class="tok">--papel-2</div><div class="hex">#F3EFE8</div><div class="use">Banda alternada. Separa secções sem precisar de filete.</div></div></div>
+    <div class="sw"><div class="chip" style="background:#EAE4DA;border-bottom:1px solid var(--linha);color:var(--texto-3)">papel-3</div>
+      <div class="info"><div class="tok">--papel-3</div><div class="hex">#EAE4DA</div><div class="use">Poços: inputs, placeholders, áreas recuadas.</div></div></div>
+  </div>
+</div></section>
+
+<!-- TINTA -->
+<section class="sec"><div class="wrap">
+  <div class="sec-head">
+    <span class="kicker">Tier 1 · primitivas</span>
+    <h2>Tinta</h2>
+    <p>Preto quente, nunca <code>#000</code> — preto puro sobre papel quente lê-se como um buraco na página. Os rácios são medidos sobre <code>--papel-1</code>.</p>
+  </div>
+  <div class="ramp">
+    <div class="sw"><div class="chip" style="background:#191714;color:rgba(255,255,255,.6)">tinta-1</div>
+      <div class="info"><div class="tok">--tinta-1</div><div class="hex">#191714</div><div class="use">Títulos e ink primário. Também o fundo do botão principal.</div><span class="ratio pass">16.0:1 · AAA</span></div></div>
+    <div class="sw"><div class="chip" style="background:#4E4941;color:rgba(255,255,255,.6)">tinta-2</div>
+      <div class="info"><div class="tok">--tinta-2</div><div class="hex">#4E4941</div><div class="use">Corpo de texto, parágrafos longos.</div><span class="ratio pass">8.3:1 · AAA</span></div></div>
+    <div class="sw"><div class="chip" style="background:#6F685D;color:rgba(255,255,255,.6)">tinta-3</div>
+      <div class="info"><div class="tok">--tinta-3</div><div class="hex">#6F685D</div><div class="use">Meta, labels, legendas, navegação inativa.</div><span class="ratio pass">5.1:1 · AA</span></div></div>
+    <div class="sw"><div class="chip" style="background:#A79F92;color:rgba(255,255,255,.75)">tinta-4</div>
+      <div class="info"><div class="tok">--tinta-4</div><div class="hex">#A79F92</div><div class="use">Não-texto apenas: filetes, estados desativados, tracejados.</div><span class="ratio">2.5:1 · não usar para texto</span></div></div>
+  </div>
+  <div class="note"><b>A regra que evita o erro clássico.</b> Sistemas «paper» falham quase sempre no mesmo sítio: o cinzento mais claro acaba a ser usado para texto pequeno porque parece elegante. Por isso <code>--tinta-4</code> tem nome de não-texto e existe um degrau (<code>--tinta-3</code>) que passa AA a 5.1:1 para o texto meta que estava a usar cinzento.</div>
+</div></section>
+
+<!-- SINAL -->
+<section class="sec"><div class="wrap">
+  <div class="sec-head">
+    <span class="kicker">Tier 1 · primitivas</span>
+    <h2>Sinal</h2>
+    <p>Um único acento cromático em todo o sistema, com uma regra de uso estrita: <b>a cor aparece só onde se pode agir</b> — sublinhados ativos, CTA de texto, estado selecionado. A página lê-se como papel e tinta; a cor identifica interação.</p>
+  </div>
+  <div class="alts">
+    <div class="alt">
+      <div class="bar" style="background:#A4462E"></div>
+      <h4>Terracota</h4><div class="hex">#A4462E · 5.6:1</div>
+      <p>Harmoniza com o que a fotografia de arquitetura já traz — tijolo, pedra, madeira, luz de fim de tarde. Quente como o papel, por isso não se «descola» da página.</p>
+      <span class="rec">Recomendado</span>
+    </div>
+    <div class="alt">
+      <div class="bar" style="background:#14484F"></div>
+      <h4>Petróleo</h4><div class="hex">#14484F · 9.5:1</div>
+      <p>Mantém o ADN da marca atual (<code>--petroleo</code>). Mais sóbrio, mas compete com céu, vidro e piscina nos exteriores — precisamente onde a foto já tem azul a mais.</p>
+    </div>
+    <div class="alt">
+      <div class="bar" style="background:#191714"></div>
+      <h4>Só tinta</h4><div class="hex">#191714 · 16.0:1</div>
+      <p>Sem acento cromático. Máxima deferência à imagem, mas os estados interativos passam a distinguir-se só por peso e filete — menos legíveis num site comercial.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- COMPONENTES -->
+<section class="sec"><div class="wrap">
+  <div class="sec-head">
+    <span class="kicker">Aplicado</span>
+    <h2>Componentes reais</h2>
+    <p>Os mesmos componentes do protótipo, com os tokens novos. A fotografia está simulada por um gradiente de valor médio — é o pior caso para contraste de texto sobre imagem.</p>
+  </div>
+
+  <div class="demo">
+    <div class="demo-lbl">Header · o vidro sobre papel</div>
+    <div class="pill"><div class="row">
+      <div class="logo">VIRI<span>ATO</span></div>
+      <nav class="menu">
+        <a href="#" class="active">Setores</a><a href="#">Soluções</a><a href="#">Casos de estudo</a><a href="#">Sobre</a>
+      </nav>
+      <a href="#" class="btn btn-p">Falar connosco</a>
+    </div></div>
+    <div class="note" style="margin-top:22px"><b>Nota.</b> O <em>liquid glass</em> sobrevive à inversão, mas não com os mesmos valores: o branco translúcido passa de 11% para 72% e as sombras encurtam. A sombra longa e preta do tema escuro lê-se como sujidade sobre papel.</div>
+  </div>
+
+  <div class="demo">
+    <div class="demo-lbl">Botões</div>
+    <div class="btn-row">
+      <a href="#" class="btn btn-p">Ver casos de estudo</a>
+      <a href="#" class="btn btn-s">Falar sobre o meu empreendimento</a>
+      <a href="#" class="btn btn-t">Ver todos →</a>
+    </div>
+    <div class="note" style="margin-top:22px"><b>O gradiente desaparece.</b> Petróleo→roxo não tem equivalente honesto num sistema de papel. O CTA principal passa a bloco de tinta sólida — mais editorial e, sobre fotografia, mais forte do que o gradiente era.</div>
+  </div>
+
+  <div class="demo">
+    <div class="demo-lbl">Navegação de secção</div>
+    <nav class="snav"><a href="#" class="on">Imagens</a><a href="#">Filmes</a><a href="#">Visitas virtuais</a><a href="#">Marketing Suite</a></nav>
+  </div>
+
+  <div class="demo">
+    <div class="demo-lbl">Cartão de caso · duas hipóteses</div>
+    <div class="two">
+      <div>
+        <div class="foto cardA">
+          <div class="veil"></div>
+          <div class="body">
+            <h3>⟨Empreendimento 01⟩</h3>
+            <div class="meta"><span>⟨Localização⟩</span><span>·</span><span class="cta">Ver caso →</span></div>
+          </div>
+        </div>
+        <p style="font-size:.84rem;margin-top:14px"><b style="color:var(--texto);font-weight:500">A · texto sobre a imagem.</b> Mantém a estrutura atual. Precisa de um véu escuro sobre a foto e de uma escala de tinta invertida (<code>--sobre-img</code>).</p>
+      </div>
+      <div>
+        <div class="cardB">
+          <div class="foto"></div>
+          <div class="body">
+            <h3>⟨Empreendimento 01⟩</h3>
+            <div class="meta"><span>⟨Localização⟩</span><span>·</span><span class="cta">Ver caso →</span></div>
+          </div>
+        </div>
+        <p style="font-size:.84rem;margin-top:14px"><b style="color:var(--texto);font-weight:500">B · legenda em tinta, foto intocada.</b> A convenção editorial. Sem véu, a fotografia mostra-se inteira — que é o argumento de venda.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo">
+    <div class="demo-lbl">Tiers</div>
+    <div class="tiers">
+      <div class="tier"><h3>Essencial</h3><p class="for">Um empreendimento único.</p><ul><li>Posicionamento</li><li>Identidade</li><li>Imagens 3D</li><li>Website</li></ul></div>
+      <div class="tier feat"><h3>Lançamento<span class="badge">Mais procurado</span></h3><p class="for">Com data marcada.</p><ul><li>Tudo o anterior</li><li>Fotografia</li><li>Visitas virtuais</li><li>Filme de lançamento</li></ul></div>
+      <div class="tier"><h3>Escala</h3><p class="for">Carteira contínua.</p><ul><li>Tudo o anterior</li><li>Marketing Suite</li><li>Equipa dedicada</li><li>Relatórios</li></ul></div>
+    </div>
+  </div>
+
+  <div class="demo">
+    <div class="demo-lbl">Placeholders</div>
+    <div class="phbox" style="max-width:420px">Imagem 01</div>
+    <p style="margin-top:16px;font-size:.88rem">Texto por definir: <span class="ph">⟨Empreendimento⟩</span> em <span class="ph">⟨Localização⟩</span>.</p>
+    <div class="note" style="margin-top:22px"><b>Placeholders ficam neutros.</b> Dar-lhes a cor de sinal inundava o protótipo de terracota — há dezenas por página — e destruía a regra de que a cor significa interação.</div>
+  </div>
+</div></section>
+
+<!-- MIGRAÇÃO -->
+<section class="sec" style="border-bottom:0"><div class="wrap">
+  <div class="sec-head">
+    <span class="kicker">Implementação</span>
+    <h2>Mapa de migração</h2>
+    <p>Os nomes semânticos (<code>--texto</code>, <code>--texto-2</code>, <code>--texto-3</code>, <code>--linha</code>, <code>--linha-forte</code>) mantêm-se, por isso grande parte do CSS continua a funcionar sem ser tocada. As linhas marcadas exigem decisão, não substituição.</p>
+  </div>
+  <div class="scroll"><table>
+    <tr><th>Token atual</th><th>Passa a</th><th>Observação</th></tr>
+    <tr><td class="t"><code>--noite</code> #070F1B</td><td class="t"><code>--papel-1</code> #FAF7F2</td><td>Base da página. Inversão direta.</td></tr>
+    <tr><td class="t"><code>--noite-2</code> #0B1728</td><td class="t"><code>--papel-2</code> #F3EFE8</td><td>Banda alternada.</td></tr>
+    <tr><td class="t"><code>--grafite / --grafite-2</code></td><td class="t"><code>--papel-3</code> / <code>--papel-0</code></td><td>Poço e cartão elevado trocam de direção: no escuro elevava-se aclarando, no papel eleva-se embranquecendo <em>e</em> com sombra.</td></tr>
+    <tr><td class="t"><code>--texto</code> #EEF3F9</td><td class="t"><code>--tinta-1</code> #191714</td><td>Nome mantém-se.</td></tr>
+    <tr><td class="t"><code>--texto-2</code> #93A3B6</td><td class="t"><code>--tinta-2</code> #4E4941</td><td>Nome mantém-se.</td></tr>
+    <tr><td class="t"><code>--texto-3</code> #5D6C7E</td><td class="t"><code>--tinta-3</code> #6F685D</td><td>Nome mantém-se — mas escurecido de propósito para passar AA.</td></tr>
+    <tr><td class="t"><code>--roxo / --roxo-soft</code></td><td class="t"><code>--sinal</code> #A4462E</td><td><b>Decisão.</b> Dois tons de acento colapsam num só, com regra de uso estrita.</td></tr>
+    <tr><td class="t"><code>--grad</code></td><td class="t">— eliminado</td><td><b>Decisão.</b> CTA passa a tinta sólida; o logo perde o gradiente e ganha «ATO» em terracota.</td></tr>
+    <tr><td class="t"><code>--petroleo</code>, <code>--petroleo-lit</code></td><td class="t">— eliminados</td><td>Só existiam para alimentar o gradiente.</td></tr>
+    <tr><td class="t"><code>.cveil</code> rgba(7,15,27,…)</td><td class="t"><code>--veu-img</code></td><td><b>Decisão A/B.</b> Preto quente em vez de preto azulado — ou removido, se seguir o tratamento B.</td></tr>
+    <tr><td class="t">~40 cores cruas no CSS</td><td class="t">absorvidas nos tokens</td><td>Sombras, vidro do header, tints roxos e véus estão hoje fora da camada de tokens. É aqui que está o trabalho real.</td></tr>
+  </table></div>
+
+  <div class="note"><b>Duas decisões antes de aplicar.</b> (1) O acento — terracota, petróleo ou só tinta. (2) O tratamento dos cartões — A mantém a estrutura, B é mais editorial mas mexe no layout dos 20 cartões. Tudo o resto é substituição mecânica.</div>
+</div></section>
+
+</body>
+</html>

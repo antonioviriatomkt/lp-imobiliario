@@ -1,0 +1,59 @@
+{
+  "slug": "",
+  "nome": "",
+  "localizacao": "",
+  "ficha": {
+    "promotor": "",
+    "concelho": "",
+    "tipologia": "",
+    "unidades": "",
+    "arquitetura": "",
+    "componentes": "",
+    "pecas": "",
+    "dominio": "",
+    "solucao": "",
+    "ano": ""
+  },
+  "_comentario_carrosseis": "Em que carrosséis da página de setor este projeto aparece. Só marcar true se o material existir mesmo.",
+  "aparece_em": {
+    "casos": false,
+    "identidade": false,
+    "imagens": false,
+    "filmes": false,
+    "visitas": false,
+    "website": false,
+    "suite": false
+  },
+  "narrativa": {
+    "desafio": "",
+    "posicionamento": "",
+    "execucao": "",
+    "resultado": ""
+  },
+  "resultados": [
+    {
+      "valor": "",
+      "metrica": ""
+    },
+    {
+      "valor": "",
+      "metrica": ""
+    },
+    {
+      "valor": "",
+      "metrica": ""
+    }
+  ],
+  "testemunho": {
+    "citacao": "",
+    "autor": ""
+  },
+  "visita_url": "",
+  "_comentario_direitos": "Sem isto preenchido, o projeto não vai a publicação.",
+  "direitos": {
+    "fotografo": "",
+    "licenca": "",
+    "aprovado_pelo_cliente": false
+  },
+  "site_url": ""
+}

@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Viriato · Protótipo — Setores / Imobiliário</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* ── TIER 1 · papel ── off-white quente. #FFF só para elevar: como base
+     de página lê-se clínico e revela o ruído de compressão das fotografias */
+  --papel-0:#FFFFFF;--papel-1:#FAF7F2;--papel-2:#F3EFE8;--papel-3:#EAE4DA;
+
+  /* ── TIER 1 · tinta ── preto quente, nunca #000 (sobre papel quente
+     lê-se como um buraco). Rácios medidos sobre --papel-1 */
+  --tinta-1:#191714;   /* 16.0:1 · títulos, ink primário   */
+  --tinta-2:#4E4941;   /*  8.3:1 · corpo de texto          */
+  --tinta-3:#6F685D;   /*  5.1:1 · meta, labels — passa AA */
+  --tinta-4:#A79F92;   /*  2.5:1 · NÃO-TEXTO: filetes, desativado */
+
+  /* ── TIER 1 · sinal ── único acento cromático do sistema.
+     Regra de uso: a cor aparece só onde se pode agir */
+  --sinal:#A4462E;--sinal-fundo:rgba(164,70,46,.08);--sinal-linha:rgba(164,70,46,.32);
+
+  /* ── TIER 2 · semânticas ── nomes herdados do tema escuro */
+  --fundo:var(--papel-1);--fundo-alt:var(--papel-2);
+  --fundo-eleva:var(--papel-0);--fundo-poco:var(--papel-3);
+  --texto:var(--tinta-1);--texto-2:var(--tinta-2);--texto-3:var(--tinta-3);--texto-fraco:var(--tinta-4);
+  --linha:rgba(25,23,20,.10);--linha-forte:rgba(25,23,20,.20);--linha-tinta:rgba(25,23,20,.38);
+
+  /* ── TIER 3 · sobre-imagem ── escala invertida própria.
+     Texto sobre foto nunca usa a tinta da página */
+  --sobre-img:#FFFFFF;--sobre-img-2:rgba(255,255,255,.74);--linha-img:rgba(255,255,255,.30);
+  /* os cartões não levam véu — a foto fica intocada e a legenda defende-se
+     com halo próprio (--halo-img). O véu só sobrevive nos heros full-bleed,
+     onde o texto é grande e ocupa metade do ecrã. */
+  /* três camadas: a apertada dá contorno, a média dá corpo, a larga dá
+     descolamento. Empilhadas rendem mais que uma só forte, e não sujam a foto. */
+  --halo-img:0 1px 1px rgba(20,18,15,.78),0 2px 10px rgba(20,18,15,.72),0 4px 34px rgba(20,18,15,.58);
+  /* o hero de setor não leva véu nenhum — a fotografia fica intocada e o
+     título carrega-se a si próprio. Só o hero do caso de estudo mantém a
+     cúpula, por ter o título grande sobre imagens que não escolhemos. */
+  /* aliviado desde que o título passou a bold: uma haste grossa defende-se
+     quase sozinha, e o halo pesado que o light precisava sujava a fotografia. */
+  --halo-hero:0 1px 2px rgba(20,18,15,.34),0 2px 14px rgba(20,18,15,.36),0 6px 48px rgba(20,18,15,.30);
+  /* véu plano e muito ligeiro sobre o hero de setor. Não substitui a --veu-hero
+     nem serve de legibilidade — disso trata o halo do título. É só para assentar
+     a fotografia na tinta quente da página: sem ele, um céu saturado atrás de um
+     título branco lê-se como stock. A mesma tinta do resto do sistema, a 12%. */
+  --tinta-hero:rgba(20,18,15,.12);
+  /* e por cima da tinta, cor a sério, mas muito ao de leve: o terracota do
+     sistema a 5% dá o mesmo que a --tinta-hero dá em valor — aproxima a
+     fotografia da temperatura da página — só que em matiz. A 5% não se vê como
+     filtro; vê-se como uma luz um pouco mais quente. */
+  --cor-hero:rgba(164,70,46,.05);
+  --veu-hero:
+    radial-gradient(ellipse 150% 128% at 50% 100%,
+      rgba(20,18,15,.72) 0%,rgba(20,18,15,.44) 34%,rgba(20,18,15,.19) 60%,transparent 88%),
+    linear-gradient(to top,
+      rgba(20,18,15,.52) 0%,rgba(20,18,15,.25) 34%,transparent 74%);
+  /* proxy fotográfico: os placeholders têm de ter valor de foto, senão o
+     sistema parece correcto no protótipo e parte quando entram as imagens */
+  --foto:linear-gradient(152deg,#C9BCA7 0%,#9E907B 46%,#5E564A 100%);
+
+  /* sombra — curta e quente. A sombra longa e preta do tema escuro
+     lê-se como sujidade sobre papel */
+  --sombra-1:0 1px 2px rgba(25,23,20,.05);
+  --sombra-2:0 2px 8px rgba(25,23,20,.06),0 12px 28px rgba(25,23,20,.07);
+  --sombra-3:0 16px 40px rgba(25,23,20,.13);
+  --vidro:rgba(255,255,255,.72);--vidro-linha:rgba(25,23,20,.09);
+
+  /* --r:0 — cantos rectos em todos os componentes. O raio vive só nos
+     botões e no header, que são pílulas por decisão própria */
+  --max:1240px;--r:0;
+  /* motion — strong curves; the built-in easings are too weak to read as intentional */
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ease-in-out:cubic-bezier(.77,0,.175,1);
+
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:108px}
+
+/* smooth scroll — Lenis. scroll-behavior above stays as the no-JS fallback;
+   .lenis-smooth overrides it once the library takes over. */
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto !important}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+.lenis.lenis-stopped{overflow:hidden}
+body{background:var(--fundo);color:var(--texto);font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 28px}
+h1,h2,h3,h4{line-height:1.08;font-weight:500;letter-spacing:-.026em}
+h1{font-size:clamp(2.6rem,6.6vw,5.4rem);font-weight:400}
+h2{font-size:clamp(2rem,4.4vw,3.4rem)}
+h3{font-size:1.15rem;font-weight:500;letter-spacing:-.01em}
+p{color:var(--texto-2)}
+a{color:inherit;text-decoration:none}
+.view{display:none}.view.on{display:block}
+
+/* placeholders */
+.ph{color:var(--texto-3);border-bottom:1px dashed var(--texto-fraco);font-style:normal}
+/* slot com ficheiro real: a caixa deixa de ser placeholder e passa a moldura */
+.phbox.tem-media{background:none;border:0;padding:0;color:transparent;overflow:hidden}
+.phbox.tem-media>*{width:100%;height:100%;display:block}
+.phbox img,.phbox video{width:100%;height:100%;object-fit:cover;display:block}
+/* .phbox representa sempre uma fotografia — daí o valor médio, não papel */
+.phbox{
+  background:
+    repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 14px,transparent 14px 28px),
+    var(--foto);
+  border:0;
+  display:grid;place-items:center;color:rgba(255,255,255,.5);
+  font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:16px;
+}
+/* texto sobre fotografia usa a escala invertida */
+.hero .wrap,.cs-hero .wrap,.cbody{color:var(--sobre-img)}
+.hero .ph,.cs-hero .ph,.cbody .ph{color:var(--sobre-img);border-bottom-color:var(--linha-img)}
+
+/* header — floating pill, liquid glass */
+header{
+  position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:200;
+  width:calc(100% - 36px);max-width:1180px;border-radius:100px;
+  background:var(--vidro);
+  -webkit-backdrop-filter:blur(20px) saturate(140%);backdrop-filter:blur(20px) saturate(140%);
+  border:1px solid var(--vidro-linha);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.6),
+    var(--sombra-1),
+    0 10px 26px rgba(25,23,20,.07);
+}
+header .wrap{max-width:none;padding:0 10px 0 26px}
+.nav{display:flex;align-items:center;justify-content:space-between;height:58px}
+.logo{font-weight:600;letter-spacing:.2em;font-size:.9rem;color:var(--texto)}
+.logo span{color:inherit}
+.menu{display:flex;gap:28px}
+/* a vista em exibição marca-se só pela tinta: fica no ink primário e as outras
+   descem um degrau na escala. Sem filete — o sublinhado dizia o mesmo que a cor
+   já dizia, e com dois sinais para um estado o header falava alto de mais. O
+   hover sobe ao mesmo ink do activo: é o que dá a entender que são clicáveis. */
+.menu a{font-size:.84rem;color:var(--texto-3);transition:color 200ms ease}
+.menu a:hover,.menu a.active{color:var(--texto)}
+/* o que ainda não existe cai para a tinta de desativado. Com as inactivas a
+   ocuparem agora o --texto-3, ficavam indistinguíveis se aqui não descesse. */
+.menu a.inert{color:var(--texto-fraco);cursor:not-allowed}
+.navr{display:flex;align-items:center;gap:10px}
+.burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:38px;height:38px;padding:0;background:none;border:0;cursor:pointer}
+.burger i{display:block;width:19px;height:1.5px;background:var(--texto);margin:0 auto;transition:.2s}
+header.open .burger i:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+header.open .burger i:nth-child(2){opacity:0}
+header.open .burger i:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:100px;font-size:.85rem;font-weight:500;border:1px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap;flex:none;
+  transition:transform 160ms var(--ease-out),border-color 200ms ease,background-color 200ms ease,filter 200ms ease,box-shadow 240ms ease}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--tinta-1);color:var(--papel-1)}
+.btn-p:hover{background:#000;box-shadow:var(--sombra-2)}
+.btn-s{border-color:var(--linha-forte);color:var(--texto)}
+.btn-s:hover{border-color:var(--linha-tinta);background-color:rgba(25,23,20,.035)}
+.btn-sm{padding:8px 16px;font-size:.8rem}
+
+/* per-section service switcher — opens each component section */
+.snav{display:flex;gap:28px;align-items:center;overflow-x:auto;scrollbar-width:none;margin-bottom:26px}
+.snav::-webkit-scrollbar{display:none}
+.snav a{position:relative;font-size:.82rem;color:var(--texto-3);white-space:nowrap;padding-bottom:7px;transition:color 200ms ease}
+.snav a:hover{color:var(--texto-2)}
+.snav a::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left center;transition:transform 300ms var(--ease-out)}
+.snav a:hover::after{transform:scaleX(1)}
+.snav a.on{color:var(--texto)}
+.snav a.on::after{background:var(--sinal);transform:scaleX(1)}
+
+/* hero */
+/* sem overflow:hidden — de propósito. Nada transborda: o .bg é inset:0 e a
+   imagem é object-fit:cover. */
+.hero{position:relative;height:min(96vh,912px);min-height:624px;
+  display:flex;align-items:center;justify-content:center}
+.hero .bg{position:absolute;inset:0}
+.hero .bg .phbox{width:100%;height:100%;border:0;font-size:.72rem}
+/* a tinta vai no .bg e não na secção: fica por cima da fotografia e por baixo
+   do título e do indicador, que têm z-index próprio. */
+.hero .bg::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(var(--cor-hero),var(--cor-hero)),var(--tinta-hero);pointer-events:none}
+/* o setor fica sozinho ao centro da fotografia — sem sticky, porque já não há
+   alinhamento a defender com o logótipo do header. */
+.hero .wrap{position:relative;z-index:3;text-align:center;
+  width:calc(100% - 36px);max-width:1180px;margin:0 auto;padding:0 27px}
+/* à escala de display o peso semibold fechava a palavra: fica no regular, que a
+   esta dimensão já tem presença que chegue, com o tracking a apertar o que a
+   escala abre. A família vem do body — DM Sans é a da página inteira. */
+.hero h1{font-size:clamp(2.6rem,7vw,6rem);font-weight:400;line-height:1.05;letter-spacing:-.02em}
+/* CTA do hero. Pílula clara e não a --btn-p do header: os dois ficam à vista ao
+   mesmo tempo e em tinta escura liam-se como o mesmo botão repetido duas vezes.
+   Sobre fotografia o branco é o que se lê sempre, seja qual for a imagem, e
+   acompanha o título — que também é branco. A sombra não é relevo: é o que o
+   separa de um céu claro, onde uma pílula branca sem ela desaparecia. */
+.hero .hero-cta{margin-top:26px;background:var(--sobre-img);color:var(--tinta-1);
+  box-shadow:0 2px 20px rgba(20,18,15,.30)}
+.hero .hero-cta:hover{box-shadow:0 5px 28px rgba(20,18,15,.38)}
+
+/* ecrãs grandes: o hero passa a ocupar o ecrã inteiro. Deixa de haver a
+   fatia da secção seguinte a espreitar, que era o que dizia «isto continua» —
+   daí o indicador. Abaixo de 1200px a fatia volta e o indicador sai. */
+.hero .scroll-cue{
+  display:none;position:absolute;z-index:3;left:50%;bottom:28px;transform:translateX(-50%);
+  flex-direction:column;align-items:center;gap:10px;
+  color:var(--sobre-img);text-shadow:var(--halo-hero);
+  font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;font-weight:500;
+  text-decoration:none;padding:6px 10px;
+}
+.hero .scroll-cue .rail{position:relative;width:1px;height:38px;background:rgba(255,255,255,.5);overflow:hidden;
+  box-shadow:0 0 12px rgba(20,18,15,.55)}
+/* o traço que desce é o movimento todo — a seta fica quieta */
+.hero .scroll-cue .rail::after{content:'';position:absolute;left:0;width:1px;height:14px;
+  background:var(--sobre-img);animation:cue 2.1s var(--ease-out) infinite}
+@keyframes cue{0%{top:-14px}55%,100%{top:38px}}
+.hero .scroll-cue:hover .rail{background:rgba(255,255,255,.55)}
+@media (min-width:1200px){
+  .hero{height:100vh;height:100dvh}
+  .hero .scroll-cue{display:flex}
+}
+
+/* section heads */
+section{position:relative}
+.sec{padding:96px 0}
+.shead{display:flex;justify-content:space-between;align-items:flex-end;gap:36px;margin-bottom:38px}
+.num{font-size:.7rem;letter-spacing:.16em;color:var(--texto-3);font-weight:600;display:block;margin-bottom:14px}
+
+/* featured cases — full-width scroll-snap carousel */
+.cases{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.cases::-webkit-scrollbar{display:none}
+.case{position:relative;flex:0 0 100%;scroll-snap-align:start;scroll-snap-stop:always;aspect-ratio:16/9;border-radius:var(--r);overflow:hidden;border:1px solid var(--linha);display:block}
+.case .phbox{position:absolute;inset:0;border:0}
+/* Só a visita. O cartão é 16/9 e o vídeo da visita também, por isso o
+   object-fit:cover não corta nada na horizontal e as colunas de bordo do render
+   — uns 6px escuros e sem contraste de cada lado — ficam à vista. Um zoom curto
+   come-as com folga. Não se aplica ao hero: esse é full-bleed e já corta muito
+   por baixo do header. No telemóvel o cartão passa a 3/4 e o cover já corta
+   500px de cada lado — o zoom deixa de ser preciso, mas a esta escala também
+   não se nota.
+   O vídeo da identidade é filmado, 3/4, sem bordos a esconder: no telemóvel
+   encaixa ao pixel na caixa e um zoom só lhe comeria as margens da peça. */
+.case[data-tipo="visitas"] .phbox video{transform:scale(1.04)}
+.cbody{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:38px 42px;max-width:56ch;text-shadow:var(--halo-img)}
+/* sem véu, o cinzento de --sobre-img-2 não aguenta relva ou céu claro:
+   no cartão a segunda linha sobe quase a branco. Nos heros mantém-se. */
+.cbody .cmeta,.cbody .csep{color:rgba(255,255,255,.90)}
+.cbody h3{font-size:clamp(1.3rem,2.4vw,2rem);margin-bottom:8px}
+.cmeta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:.86rem;color:var(--sobre-img-2)}
+.csep{color:var(--sobre-img-2)}
+.clink{position:relative;display:inline-flex;align-items:center;gap:7px;color:var(--sobre-img);font-weight:500;transition:color 200ms ease}
+.clink i{font-style:normal;transition:transform 260ms var(--ease-out)}
+.clink::after{content:'';position:absolute;left:0;right:0;bottom:-4px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left center;transition:transform 320ms var(--ease-out)}
+.sheadr{display:flex;align-items:center;gap:12px;flex:none}
+.cnav{display:flex;gap:8px}
+.cbtn{width:40px;height:40px;flex:none;border-radius:50%;border:1px solid var(--linha-forte);background:none;color:var(--texto);font:inherit;font-size:.95rem;cursor:pointer;
+  transition:transform 160ms var(--ease-out),border-color 200ms ease,color 200ms ease,background-color 200ms ease}
+.cbtn:hover{border-color:var(--sinal);color:var(--sinal);background-color:var(--sinal-fundo)}
+.cbtn:active{transform:scale(.92)}
+
+/* hover-only motion — touch devices fire :hover on tap, which sticks */
+@media (hover:hover) and (pointer:fine){
+  .case:hover .clink::after{transform:scaleX(1)}
+  .case:hover .clink i{transform:translateX(4px)}
+}
+
+/* reduced motion — drop movement, keep colour and underline state */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .btn:active,.cbtn:active,.case:hover .clink i{transform:none}
+  /* o indicador fica — é informação, não decoração; só pára de andar */
+  .hero .scroll-cue .rail::after{animation:none;top:0;height:38px;opacity:.7}
+  .snav a::after,.clink::after{transition:none}
+}
+
+/* component showcase */
+.comp{padding:84px 0;border-top:1px solid var(--linha);background:var(--fundo)}
+.comp .shead{margin-bottom:32px}
+
+/* tiers */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.tier{border:1px solid var(--linha);border-radius:var(--r);overflow:hidden;background:var(--fundo-eleva);box-shadow:var(--sombra-1);display:flex;flex-direction:column}
+.tier.feat2{border-color:var(--sinal-linha);background:linear-gradient(180deg,var(--sinal-fundo),transparent 38%),var(--fundo-eleva);box-shadow:var(--sombra-2)}
+.badge{display:inline-flex;font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;font-weight:600;padding:5px 11px;border-radius:var(--r);border:1px solid var(--linha-forte);color:var(--texto-2)}
+.badge.hot{border-color:var(--sinal-linha);color:var(--sinal);background:var(--sinal-fundo)}
+.thead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;min-height:67px;padding:16px 26px;border-bottom:1px solid var(--linha);background:var(--papel-2)}
+.tier.feat2 .thead{background:var(--sinal);border-bottom-color:transparent;color:var(--papel-0)}
+.tier.feat2 .thead .badge{border-color:rgba(255,255,255,.45);color:#fff;background:rgba(255,255,255,.16)}
+.tier h3{font-size:1.35rem;font-weight:500}
+.tbody{display:flex;flex-direction:column;flex:1;padding:24px 26px 26px}
+.tier .for{font-size:.88rem;color:var(--texto-2);margin-bottom:22px;min-height:2.8em}
+.tier ul{list-style:none;margin-bottom:28px}
+.tier li{font-size:.86rem;color:var(--texto);padding:6px 0 6px 24px;position:relative}
+.tier li::before{content:"✓";position:absolute;left:0;top:6px;font-size:.8rem;color:var(--sinal)}
+.tfoot{margin-top:auto}
+.tfoot input{background:none;border:0;border-bottom:1px solid var(--linha-forte);border-radius:0;padding:10px 0;margin-bottom:20px;font-size:.86rem}
+.tfoot input::placeholder{color:var(--texto-3)}
+.tfoot input:focus{outline:none;border-bottom-color:var(--sinal)}
+.tier .btn{width:100%;justify-content:center}
+
+/* citação — vive só no caso de estudo, a seguir aos resultados */
+.quote{border:1px solid var(--linha);border-radius:var(--r);padding:34px;background:var(--fundo-eleva);box-shadow:var(--sombra-1);margin-top:16px}
+.quote p{font-size:1.08rem;color:var(--texto);margin-bottom:16px}
+.quote .who{font-size:.82rem;color:var(--texto-3)}
+
+/* faq */
+.faq details{border-top:1px solid var(--linha)}
+.faq details:last-of-type{border-bottom:1px solid var(--linha)}
+.faq summary{padding:20px 0;cursor:pointer;font-size:.98rem;font-weight:500;list-style:none;display:flex;justify-content:space-between;gap:20px}
+.faq summary::-webkit-details-marker{display:none}
+/* marcador +/− desenhado com dois gradientes em vez de trocar o glifo:
+   `content` não transiciona, `background-size` sim — a barra vertical
+   encolhe e o + torna-se − sem salto */
+.faq summary::after{
+  content:'';flex:none;width:13px;height:13px;margin-top:.34em;
+  background:
+    linear-gradient(var(--sinal),var(--sinal)) center/100% 1.5px no-repeat,
+    linear-gradient(var(--sinal),var(--sinal)) center/1.5px 100% no-repeat;
+  transition:background-size 320ms var(--ease-out),transform 320ms var(--ease-out);
+}
+.faq details[open] summary::after{background-size:100% 1.5px,1.5px 0;transform:rotate(180deg)}
+.faq summary:hover{color:var(--sinal)}
+.faq summary{transition:color 200ms ease}
+.faq .ans{padding:0 0 22px;max-width:72ch;font-size:.93rem;color:var(--texto-2)}
+
+/* contacto */
+.contact{background:var(--fundo-alt);border-top:1px solid var(--linha)}
+.cgrid{display:grid;grid-template-columns:.8fr 1.2fr;gap:64px;align-items:start}
+form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.f-full{grid-column:1/-1}
+label{display:block;font-size:.75rem;color:var(--texto-3);margin-bottom:6px}
+input,select,textarea{width:100%;background:var(--papel-0);border:1px solid var(--linha-forte);border-radius:var(--r);padding:11px 13px;color:var(--texto);font-family:inherit;font-size:.9rem}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sinal);box-shadow:0 0 0 3px var(--sinal-fundo)}
+textarea{resize:vertical;min-height:88px}
+.cinfo{border-top:1px solid var(--linha);padding-top:22px;margin-top:26px}
+.cinfo div{margin-bottom:14px}
+.cinfo span{display:block;font-size:.73rem;color:var(--texto-3);margin-bottom:2px}
+
+/* footer */
+footer{border-top:1px solid var(--linha);padding:56px 0 36px}
+.fgrid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:36px;margin-bottom:44px}
+footer h5{font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--texto-3);margin-bottom:16px;font-weight:600}
+footer ul{list-style:none}footer li{margin-bottom:9px}
+footer li a{font-size:.86rem;color:var(--texto-2)}
+.fbot{display:flex;justify-content:space-between;gap:16px;font-size:.78rem;color:var(--texto-3);padding-top:24px;border-top:1px solid var(--linha);flex-wrap:wrap}
+
+/* ---------- CASE STUDY ---------- */
+.cs-hero{height:min(78vh,680px);min-height:440px;position:relative;display:flex;align-items:flex-end}
+.cs-hero .bg{position:absolute;inset:0}
+.cs-hero .bg .phbox{width:100%;height:100%;border:0}
+.cs-hero .veil{position:absolute;inset:0;background:var(--veu-hero)}
+.cs-hero .wrap{position:relative;z-index:3;padding-bottom:52px;width:100%}
+.crumb{font-size:.8rem;color:var(--sobre-img-2);margin-bottom:18px}
+.crumb a{color:var(--sobre-img)}
+.credits{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--linha);border-top:1px solid var(--linha);border-bottom:1px solid var(--linha)}
+.credits div{background:var(--fundo);padding:20px 24px}
+.credits span{display:block;font-size:.68rem;color:var(--texto-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.credits strong{font-size:.9rem;font-weight:500}
+.csnarr{display:grid;grid-template-columns:180px 1fr;gap:36px;padding:44px 0;border-top:1px solid var(--linha)}
+.csnarr h3{font-size:.98rem;color:var(--sinal)}
+.csnarr p{font-size:1rem}
+.media-full{margin:0 0 14px}
+.media-full .phbox{aspect-ratio:21/9;border-radius:var(--r)}
+.media-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.media-2 .phbox{aspect-ratio:4/3;border-radius:var(--r)}
+.results{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+.result{border:1px solid var(--linha);border-radius:var(--r);padding:24px;background:var(--fundo-eleva);box-shadow:var(--sombra-1)}
+.result strong{display:block;font-size:2rem;font-weight:500;margin-bottom:4px;color:var(--tinta-1)}
+.result span{font-size:.83rem;color:var(--texto-2)}
+.csnav{display:grid;grid-template-columns:1fr 1fr;gap:14px;border-top:1px solid var(--linha);padding-top:34px;margin-top:20px}
+.csnav a{border:1px solid var(--linha);border-radius:var(--r);padding:24px 26px;display:flex;justify-content:space-between;align-items:center;gap:16px;background:var(--fundo-eleva);box-shadow:var(--sombra-1);transition:border-color 200ms ease,box-shadow 240ms ease}
+.csnav a:hover{border-color:var(--sinal-linha);box-shadow:var(--sombra-2)}
+.csnav small{display:block;font-size:.72rem;color:var(--texto-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+
+/* sobre */
+.about-hero{padding:104px 0 76px}
+.about-hero h1{max-width:18ch}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--fundo-eleva);border:1px solid var(--linha);border-radius:var(--r);padding:30px;box-shadow:var(--sombra-1)}
+.card h3{margin-bottom:10px}
+.card p{font-size:.93rem}
+.team{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.team .img{aspect-ratio:3/4;border-radius:var(--r);margin-bottom:12px}
+.team h4{font-size:.95rem;font-weight:500;margin-bottom:2px}
+.team span{font-size:.8rem;color:var(--texto-3)}
+.cta-band{margin-top:44px;padding:40px;border:1px solid var(--sinal-linha);border-radius:var(--r);background:var(--sinal-fundo);display:flex;justify-content:space-between;align-items:center;gap:26px;flex-wrap:wrap}
+
+@media(max-width:1000px){
+  .menu{display:none}
+  .burger{display:flex}
+  header.open .menu{
+    display:flex;flex-direction:column;gap:0;position:absolute;top:calc(100% + 10px);left:0;right:0;
+    border-radius:26px;padding:6px 26px 20px;
+    background:rgba(255,255,255,.86);
+    -webkit-backdrop-filter:blur(20px) saturate(140%);backdrop-filter:blur(20px) saturate(140%);
+    border:1px solid var(--vidro-linha);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.7),var(--sombra-3);
+  }
+  header.open .menu a{font-size:1rem;padding:15px 0;border-top:1px solid var(--linha)}
+  header.open .menu a:first-child{border-top:0}
+  .tiers,.g2,.cgrid,.credits,.team,.results,.media-2,.csnav{grid-template-columns:1fr}
+  /* the 4 desktop columns can't shrink below min-content and overflow the page */
+  .fgrid{grid-template-columns:1fr 1fr;gap:30px 24px}
+  .fgrid>div:first-child{grid-column:1/-1}
+  .case{aspect-ratio:3/4}
+  .cbody{padding:26px 24px;max-width:none}
+  .csnarr{grid-template-columns:1fr;gap:8px}
+  form{grid-template-columns:1fr}
+  .shead{flex-direction:column;align-items:flex-start;gap:18px}
+  .sec,.comp{padding:64px 0}
+  header{width:calc(100% - 24px);top:12px}
+  header .wrap{padding:0 8px 0 20px}
+  .hero .wrap{width:calc(100% - 24px);padding:0 21px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#" data-go="imob">VIRI<span>ATO</span></a>
+    <div class="menu">
+      <a href="#" data-go="imob" class="active" id="nav-set">Setores</a>
+      <a href="#" class="inert">Soluções</a>
+      <a href="#" data-go="caso" id="nav-cas">Casos de estudo</a>
+      <a href="#" class="inert">Como trabalhamos</a>
+      <a href="#" data-go="sobre" id="nav-sob">Sobre</a>
+    </div>
+    <div class="navr">
+      <a href="#contacto" class="btn btn-p btn-sm">Falar connosco</a>
+      <button class="burger" id="burger" aria-label="Abrir menu" aria-expanded="false"><i></i><i></i><i></i></button>
+    </div>
+  </div>
+</header>
+
+<!-- ================================================================ -->
+<!-- ==================== VIEW 1 — SETOR IMOBILIÁRIO ================ -->
+<!-- ================================================================ -->
+<main class="view on" id="v-imob">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="bg"><div class="phbox">Vídeo / imagem de abertura — empreendimento em destaque</div></div>
+  <div class="wrap">
+    <h1>Lançamentos imobiliários</h1>
+    <a href="#contacto" class="btn hero-cta">Discutir o seu projeto</a>
+  </div>
+  <a href="#casos" class="scroll-cue" aria-label="Ver os empreendimentos"><span class="rail"></span>Ver mais</a>
+</section>
+
+<!-- CASOS EM DESTAQUE -->
+<section class="sec" id="casos">
+  <div class="wrap">
+    <div class="shead">
+      <div>
+        <h2>Projetos selecionados</h2>
+      </div>
+      <div class="sheadr">
+        <div class="cnav">
+          <button class="cbtn" data-dir="-1" aria-label="Caso anterior">←</button>
+          <button class="cbtn" data-dir="1" aria-label="Caso seguinte">→</button>
+        </div>
+        <a href="#" data-go="caso" class="btn btn-s">Ver todos os casos</a>
+      </div>
+    </div>
+    <div class="cases" id="cases">
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Imagem 01</div>
+        <div class="cbody">
+          <h3 class="ph">⟨Empreendimento 01⟩</h3>
+          <div class="cmeta"><span class="ph">⟨Localização⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div>
+        </div>
+      </a>
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Imagem 02</div>
+        <div class="cbody">
+          <h3 class="ph">⟨Empreendimento 02⟩</h3>
+          <div class="cmeta"><span class="ph">⟨Localização⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div>
+        </div>
+      </a>
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Imagem 03</div>
+        <div class="cbody">
+          <h3 class="ph">⟨Empreendimento 03⟩</h3>
+          <div class="cmeta"><span class="ph">⟨Localização⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENTE 01 — IDENTIDADE -->
+<section class="comp" id="identidade">
+  <div class="wrap">
+    <nav class="snav">
+      <a href="#identidade" class="on">Identidade</a>
+      <a href="#imagens">Imagens</a>
+      <a href="#visitas">Visitas virtuais</a>
+      <a href="#website">Website</a>
+    </nav>
+  </div>
+  <div class="wrap shead">
+    <div>
+      <h2>Identidade</h2>
+    </div>
+    <div class="sheadr">
+      <div class="cnav">
+        <button class="cbtn" data-dir="-1" aria-label="Anterior">←</button>
+        <button class="cbtn" data-dir="1" aria-label="Seguinte">→</button>
+      </div>
+      <a href="#" data-go="caso" class="btn btn-s">Ver todos</a>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="cases">
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Identidade / logótipo</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Peças⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Brochura comercial</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Peças⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Dossier de vendas</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Peças⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Tapumes de estaleiro</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Peças⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENTE 02 — IMAGENS -->
+<section class="comp" id="imagens">
+  <div class="wrap">
+    <nav class="snav">
+      <a href="#identidade">Identidade</a>
+      <a href="#imagens" class="on">Imagens</a>
+      <a href="#visitas">Visitas virtuais</a>
+      <a href="#website">Website</a>
+    </nav>
+  </div>
+  <div class="wrap shead">
+    <div>
+      <h2>Imagens</h2>
+    </div>
+    <div class="sheadr">
+      <div class="cnav">
+        <button class="cbtn" data-dir="-1" aria-label="Anterior">←</button>
+        <button class="cbtn" data-dir="1" aria-label="Seguinte">→</button>
+      </div>
+      <a href="#" data-go="caso" class="btn btn-s">Ver todos</a>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="cases">
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Imagem 01</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Localização⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Imagem 02</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Localização⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Imagem 03</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Localização⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Imagem 04</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Localização⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Imagem 05</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Localização⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENTE 03 — VISITAS VIRTUAIS -->
+<section class="comp" id="visitas">
+  <div class="wrap">
+    <nav class="snav">
+      <a href="#identidade">Identidade</a>
+      <a href="#imagens">Imagens</a>
+      <a href="#visitas" class="on">Visitas virtuais</a>
+      <a href="#website">Website</a>
+    </nav>
+  </div>
+  <div class="wrap shead">
+    <div>
+      <h2>Visitas virtuais</h2>
+    </div>
+    <div class="sheadr">
+      <div class="cnav">
+        <button class="cbtn" data-dir="-1" aria-label="Anterior">←</button>
+        <button class="cbtn" data-dir="1" aria-label="Seguinte">→</button>
+      </div>
+      <a href="#" data-go="caso" class="btn btn-s">Ver todos</a>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="cases">
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Visita 360º · 01</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Tipologia⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Visita 360º · 02</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Tipologia⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Visita 360º · 03</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Tipologia⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Visita 360º · 04</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Tipologia⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENTE 04 — WEBSITE -->
+<section class="comp" id="website">
+  <div class="wrap">
+    <nav class="snav">
+      <a href="#identidade">Identidade</a>
+      <a href="#imagens">Imagens</a>
+      <a href="#visitas">Visitas virtuais</a>
+      <a href="#website" class="on">Website</a>
+    </nav>
+  </div>
+  <div class="wrap shead">
+    <div>
+      <h2>Website</h2>
+    </div>
+    <div class="sheadr">
+      <div class="cnav">
+        <button class="cbtn" data-dir="-1" aria-label="Anterior">←</button>
+        <button class="cbtn" data-dir="1" aria-label="Seguinte">→</button>
+      </div>
+      <a href="#" data-go="caso" class="btn btn-s">Ver todos</a>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="cases">
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Website do empreendimento</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Domínio⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Landing page de campanha</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Domínio⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Página de tipologias</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Domínio⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+      <a class="case" href="#" data-go="caso">
+        <div class="phbox">Versão mobile</div>
+        <div class="cbody"><h3 class="ph">⟨Empreendimento⟩</h3><div class="cmeta"><span class="ph">⟨Domínio⟩</span><span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUÇÕES / TIERS -->
+<section class="sec" id="solucoes" style="background:var(--fundo-alt);border-top:1px solid var(--linha)">
+  <div class="wrap">
+    <div class="shead">
+      <div>
+        <h2>Três perfis de promotor</h2>
+      </div>
+    </div>
+    <div class="tiers">
+
+      <div class="tier">
+        <div class="thead"><h3>Essencial</h3></div>
+        <div class="tbody">
+          <p class="for">Para o promotor com um empreendimento único.</p>
+          <ul>
+            <li>Posicionamento</li>
+            <li>Identidade do empreendimento</li>
+            <li>Imagens 3D</li>
+            <li>Plantas comerciais</li>
+            <li>Brochura comercial</li>
+            <li>Website</li>
+          </ul>
+          <div class="tfoot">
+            <input type="email" placeholder="O seu email*" aria-label="Email">
+            <a href="#contacto" class="btn btn-s">Saber mais</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="tier feat2">
+        <div class="thead"><h3>Lançamento</h3><span class="badge hot">Mais procurado</span></div>
+        <div class="tbody">
+          <p class="for">Para o promotor com data marcada.</p>
+          <ul>
+            <li>Posicionamento</li>
+            <li>Identidade do empreendimento</li>
+            <li>Imagens 3D</li>
+            <li>Plantas comerciais</li>
+            <li>Brochura comercial</li>
+            <li>Website e landing pages</li>
+            <li>Fotografia</li>
+            <li>Visitas virtuais</li>
+            <li>Filme de lançamento</li>
+            <li>Marketing Suite</li>
+          </ul>
+          <div class="tfoot">
+            <input type="email" placeholder="O seu email*" aria-label="Email">
+            <a href="#contacto" class="btn btn-p">Saber mais</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="tier">
+        <div class="thead"><h3>Programa</h3></div>
+        <div class="tbody">
+          <p class="for">Para o promotor com fases sucessivas.</p>
+          <ul>
+            <li>Posicionamento</li>
+            <li>Sistema de marca para várias fases</li>
+            <li>Imagens 3D</li>
+            <li>Plantas comerciais</li>
+            <li>Brochura comercial</li>
+            <li>Website e landing pages</li>
+            <li>Fotografia</li>
+            <li>Visitas virtuais</li>
+            <li>Filme de lançamento</li>
+            <li>Marketing Suite</li>
+            <li>Materiais de estaleiro</li>
+            <li>Equipa dedicada por fase</li>
+          </ul>
+          <div class="tfoot">
+            <input type="email" placeholder="O seu email*" aria-label="Email">
+            <a href="#contacto" class="btn btn-s">Saber mais</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <p style="margin-top:22px;font-size:.84rem;color:var(--texto-3)">Orçamentado por empreendimento, em função da dimensão, tipologias e calendário. Não trabalhamos por tabela de preços por peça.</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<!-- fundo neutro: a secção de prova que separava as Soluções da FAQ saiu, e as
+     duas ficavam em --fundo-alt encostadas uma à outra. A alternância volta a
+     ler-se — Soluções recuada, FAQ ao nível da página, Contacto recuado. -->
+<section class="sec" style="border-top:1px solid var(--linha)">
+  <div class="wrap">
+    <div class="shead"><div><h2>O que os promotores costumam perguntar</h2></div></div>
+    <div class="faq">
+      <details><summary>Trabalham com a nossa mediadora ou substituem-na?</summary><div class="ans">Trabalhamos com. O material serve quem vende — equipa própria ou mediadora. Só pedimos que haja um responsável definido pelos contactos.</div></details>
+      <details><summary>Quanto tempo até termos material no ar?</summary><div class="ans ph">⟨Definir prazos reais por solução.⟩</div></details>
+      <details><summary>Os ficheiros ficam nossos?</summary><div class="ans ph">⟨Definir política de propriedade de ficheiros, fontes 3D e licenças de imagem.⟩</div></details>
+      <details><summary>Só precisamos de imagens. Vale a pena falar convosco?</summary><div class="ans">Provavelmente não. Fazemos imagens, mas o nosso valor está em resolver o lançamento inteiro. Para um pedido isolado há estúdios mais rápidos e mais baratos.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section class="sec contact" id="contacto">
+  <div class="wrap cgrid">
+    <div>
+      <h2 style="margin-bottom:16px">Fale connosco sobre o seu empreendimento</h2>
+      <div class="cinfo">
+        <div><span>Email</span><span class="ph">⟨email comercial⟩</span></div>
+        <div><span>Telefone</span><span class="ph">⟨telefone⟩</span></div>
+        <div><span>Responsável comercial</span><span class="ph">⟨Nome · cargo⟩</span></div>
+      </div>
+    </div>
+    <form onsubmit="event.preventDefault();alert('Protótipo — formulário não submete.')">
+      <div><label>Nome*</label><input required></div>
+      <div><label>Empresa*</label><input required></div>
+      <div><label>Email*</label><input type="email" required></div>
+      <div><label>Telefone</label><input></div>
+      <div class="f-full"><label>Empreendimento e localização</label><input placeholder="Nome do projeto, concelho"></div>
+      <div><label>Nº de unidades</label><select><option>Selecionar</option><option>Até 20</option><option>20–50</option><option>50–150</option><option>Mais de 150</option></select></div>
+      <div><label>Fase atual</label><select><option>Selecionar</option><option>Em estudo / projeto</option><option>Licenciado</option><option>Em construção</option><option>Já em comercialização</option></select></div>
+      <div><label>Lançamento previsto</label><select><option>Selecionar</option><option>Menos de 3 meses</option><option>3–6 meses</option><option>6–12 meses</option><option>Mais de 12 meses</option></select></div>
+      <div><label>Equipa comercial e CRM</label><select><option>Selecionar</option><option>Sim, ambos ativos</option><option>Equipa sim, CRM não</option><option>Em implementação</option><option>Nenhum dos dois</option></select></div>
+      <div class="f-full"><label>O que precisa de resolver</label><textarea placeholder="Em duas linhas: qual é o problema comercial deste lançamento?"></textarea></div>
+      <div class="f-full"><button class="btn btn-p" style="width:100%;justify-content:center">Pedir diagnóstico</button></div>
+    </form>
+  </div>
+</section>
+</main>
+
+<!-- ================================================================ -->
+<!-- ====================== VIEW 2 — CASO DE ESTUDO ================= -->
+<!-- ================================================================ -->
+<main class="view" id="v-caso">
+  <section class="cs-hero">
+    <div class="bg"><div class="phbox">Imagem principal do caso</div></div>
+    <div class="veil"></div>
+    <div class="wrap">
+      <div class="crumb"><a href="#" data-go="imob">Imobiliário</a> › <span class="ph">⟨Empreendimento⟩</span></div>
+      <h1 class="ph" style="max-width:14ch">⟨Nome do empreendimento⟩</h1>
+    </div>
+  </section>
+
+  <div class="credits">
+    <div><span>Promotor</span><strong class="ph">⟨Cliente⟩</strong></div>
+    <div><span>Localização</span><strong class="ph">⟨Concelho⟩</strong></div>
+    <div><span>Tipologia</span><strong class="ph">⟨Residencial⟩</strong></div>
+    <div><span>Unidades</span><strong class="ph">⟨00⟩</strong></div>
+    <div><span>Arquitetura</span><strong class="ph">⟨Atelier⟩</strong></div>
+    <div><span>Componentes</span><strong>Imagens · Filme · Visitas · Suite</strong></div>
+    <div><span>Solução</span><strong>Lançar</strong></div>
+    <div><span>Ano</span><strong class="ph">⟨0000⟩</strong></div>
+  </div>
+
+  <section class="sec" style="padding-top:52px">
+    <div class="wrap">
+      <div class="media-full"><div class="phbox">Imagem grande — vista principal</div></div>
+      <div class="media-2"><div class="phbox">Imagem</div><div class="phbox">Imagem</div></div>
+
+      <div class="csnarr"><h3>Desafio</h3><div><p class="ph">⟨O problema comercial do promotor — não o briefing criativo. Ex.: produto forte num mercado onde ninguém o conhecia; ritmo de vendas abaixo do previsto na fase 1.⟩</p></div></div>
+      <div class="csnarr"><h3>Solução</h3><div><p class="ph">⟨Que posicionamento foi definido e porquê. A decisão estratégica, antes das peças.⟩</p></div></div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="media-full"><div class="phbox">Imagem grande — interior / tipologia</div></div>
+    <div class="media-2"><div class="phbox">Filme — frame</div><div class="phbox">Visita virtual — frame</div></div>
+  </div>
+
+  <section class="sec" style="padding-top:44px">
+    <div class="wrap">
+      <div class="csnarr"><h3>Integração</h3><div><p class="ph">⟨Como as peças se ligaram: a identidade alimentou as imagens, as imagens alimentaram o site e os criativos, o site alimentou a Marketing Suite.⟩</p></div></div>
+      <div class="csnarr"><h3>Resultado</h3><div>
+        <p class="ph">⟨O que mudou em termos comerciais. Sempre que possível com número autorizado pelo cliente.⟩</p>
+        <div class="results">
+          <div class="result"><strong class="ph">⟨00%⟩</strong><span>Descrever a métrica</span></div>
+          <div class="result"><strong class="ph">⟨00⟩</strong><span>Descrever a métrica</span></div>
+          <div class="result"><strong class="ph">⟨00 dias⟩</strong><span>Descrever a métrica</span></div>
+        </div>
+      </div></div>
+
+      <div class="quote">
+        <p class="ph">“⟨Citação do promotor sobre o resultado comercial.⟩”</p>
+        <div class="who"><span class="ph">⟨Nome, cargo, empresa⟩</span></div>
+      </div>
+
+      <div class="csnav">
+        <a href="#" data-go="caso"><div><small>Caso anterior</small><strong class="ph">⟨Empreendimento⟩</strong></div><span>←</span></a>
+        <a href="#" data-go="caso" style="text-align:right"><div style="margin-left:auto"><small>Caso seguinte</small><strong class="ph">⟨Empreendimento⟩</strong></div><span>→</span></a>
+      </div>
+
+      <div class="cta-band">
+        <div><h3>Tem um empreendimento para lançar?</h3></div>
+        <a href="#" data-go="imob" class="btn btn-p">Falar connosco</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================================================================ -->
+<!-- =========================== VIEW 3 — SOBRE ===================== -->
+<!-- ================================================================ -->
+<main class="view" id="v-sobre">
+  <section class="about-hero">
+    <div class="wrap">
+      <h1>Fazemos com que o produto seja comprado antes de existir.</h1>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="media-full"><div class="phbox">Imagem de equipa / estúdio</div></div></div>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="g2">
+        <div class="card"><h3>O que fazemos</h3><p>Imagem, filme, visitas virtuais, showrooms físicos e digitais, plataformas de venda e campanhas — vendidos como solução para um momento comercial, não à peça.</p></div>
+        <div class="card"><h3>Para quem trabalhamos</h3><p>Marcas de produto e materiais, promotores imobiliários e retalho técnico e distribuição. Três mercados onde temos autoridade provada.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0">
+    <div class="wrap">
+      <div class="shead"><div><h2>Quatro princípios</h2></div></div>
+      <div class="g2">
+        <div class="card"><span class="num">01</span><h3>O posicionamento vem antes da imagem</h3><p>Produzir antes de decidir o que o produto é e para quem gera material bonito e comercialmente inútil.</p></div>
+        <div class="card"><span class="num">02</span><h3>Vendemos solução, não disciplinas</h3><p>Sem tabela de preços por render, por página ou por minuto de vídeo. Soluções para momentos comerciais.</p></div>
+        <div class="card"><span class="num">03</span><h3>Dizemos que não</h3><p>Há projetos para os quais não somos a escolha certa e preferimos dizê-lo na primeira reunião.</p></div>
+        <div class="card"><span class="num">04</span><h3>A tecnologia é infraestrutura</h3><p>IA e ferramentas próprias estão por baixo de tudo o que fazemos. Não são um produto vendido à parte.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" style="background:var(--fundo-alt);border-top:1px solid var(--linha)">
+    <div class="wrap">
+      <div class="shead"><div><h2>Ferramentas que são nossas</h2></div></div>
+      <div class="g2">
+        <div class="card"><h3>V-SHOW®</h3><p class="ph">⟨Descrição curta orientada a benefício comercial.⟩</p></div>
+        <div class="card"><h3>MAXVIEW®</h3><p class="ph">⟨Descrição curta orientada a benefício comercial.⟩</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="shead"><div><h2>Quem trabalha consigo</h2></div></div>
+      <div class="team">
+        <div><div class="img phbox">Foto</div><h4 class="ph">⟨Nome⟩</h4><span class="ph">⟨Função⟩</span></div>
+        <div><div class="img phbox">Foto</div><h4 class="ph">⟨Nome⟩</h4><span class="ph">⟨Função⟩</span></div>
+        <div><div class="img phbox">Foto</div><h4 class="ph">⟨Nome⟩</h4><span class="ph">⟨Função⟩</span></div>
+        <div><div class="img phbox">Foto</div><h4 class="ph">⟨Nome⟩</h4><span class="ph">⟨Função⟩</span></div>
+      </div>
+      <div class="cta-band">
+        <div><h3>Quer perceber se fazemos sentido para o seu projeto?</h3></div>
+        <a href="#" data-go="imob" class="btn btn-p">Falar connosco</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div><div class="logo" style="margin-bottom:14px">VIRI<span>ATO</span></div><p style="font-size:.88rem;max-width:30ch">Transformamos produtos, espaços e marcas em ferramentas comerciais mais fortes.</p></div>
+      <div><h5>Setores</h5><ul><li><a href="#">Marcas de produto e materiais</a></li><li><a href="#" data-go="imob">Imobiliário</a></li><li><a href="#">Retalho técnico e distribuição</a></li></ul></div>
+      <div><h5>Soluções</h5><ul><li><a href="#">Launch</a></li><li><a href="#">Experience</a></li><li><a href="#">Growth</a></li></ul></div>
+      <div><h5>Empresa</h5><ul><li><a href="#" data-go="caso">Casos de estudo</a></li><li><a href="#">Como trabalhamos</a></li><li><a href="#" data-go="sobre">Sobre</a></li><li><a href="#">Contacto</a></li></ul></div>
+    </div>
+    <div class="fbot"><span>© 2026 Viriato</span><span><a href="#">Privacidade</a> · <a href="#">Cookies</a></span></div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/lenis@1/dist/lenis.min.js"></script>
+<!-- gerado por media/gerar-dados.sh — ficheiro, não fetch: em file:// o
+     fetch de JSON é bloqueado por CORS e o protótipo abre direto do disco -->
+<script src="dados.js"></script>
+<script>
+/* ---- smooth scroll (Lenis) ---- */
+const reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let lenis=null;
+if(!reduced&&window.Lenis){
+  lenis=new Lenis({duration:1.1,easing:t=>Math.min(1,1.001-Math.pow(2,-10*t))});
+  // must be kicked off by rAF itself — calling raf() directly passes t=undefined
+  // and Lenis's delta maths goes NaN, silently freezing every animation
+  const raf=t=>{lenis.raf(t);requestAnimationFrame(raf)};
+  requestAnimationFrame(raf);
+}
+// No offset here on purpose: Lenis already honours html{scroll-padding-top},
+// so the header clearance lives in the stylesheet for both JS and no-JS paths.
+function smoothScrollTo(target,opts){
+  if(lenis)lenis.scrollTo(target,opts);
+  else target.scrollIntoView({behavior:reduced?'auto':'smooth'});
+}
+/* Horizontal gestures inside a carousel must reach the browser, not Lenis.
+   Capture-phase + stopPropagation keeps Lenis's window listener out of it,
+   without preventDefault, so native horizontal scrolling still happens. */
+document.querySelectorAll('.cases').forEach(track=>{
+  track.addEventListener('wheel',e=>{
+    if(Math.abs(e.deltaX)>Math.abs(e.deltaY))e.stopPropagation();
+  },{capture:true});
+});
+
+/* ---- FAQ: <details> não anima de raiz — o painel tem de ser animado à mão ---- */
+document.querySelectorAll('.faq details').forEach(d=>{
+  const summary=d.querySelector('summary'),panel=d.querySelector('.ans');
+  if(!summary||!panel)return;
+  summary.addEventListener('click',e=>{
+    if(reduced)return;                       // sem motion: comportamento nativo
+    e.preventDefault();
+    if(d.dataset.busy)return;                // ignora cliques durante a transição
+    d.dataset.busy='1';
+    const opening=!d.open;
+    if(opening)d.open=true;                  // tem de estar aberto para medir
+    // altura border-box já com padding; o padding anima em paralelo, senão
+    // os 22px de baixo impedem o painel de fechar até zero
+    const full=panel.getBoundingClientRect().height;
+    const pad=getComputedStyle(panel).paddingBottom;
+    panel.style.overflow='hidden';
+    const anim=panel.animate({
+      height:opening?['0px',full+'px']:[full+'px','0px'],
+      paddingBottom:opening?['0px',pad]:[pad,'0px'],
+      opacity:opening?[0,1]:[1,0]
+    // fill:forwards é obrigatório: sem ele a animação larga os valores no fim
+    // e o painel volta à altura natural um frame antes do onfinish — dá um
+    // salto visível mesmo no fecho, que é precisamente o que se quer evitar
+    },{duration:opening?340:250,easing:'cubic-bezier(.23,1,.32,1)',fill:'forwards'});
+    anim.onfinish=()=>{
+      if(!opening)d.open=false;   // fechar antes de largar o fill
+      anim.cancel();
+      panel.style.overflow='';panel.style.height='';panel.style.paddingBottom='';
+      delete d.dataset.busy;
+    };
+  });
+});
+
+const views={imob:'v-imob',caso:'v-caso',sobre:'v-sobre'};
+const navMap={imob:'nav-set',caso:'nav-cas',sobre:'nav-sob'};
+const header=document.querySelector('header'),burger=document.getElementById('burger');
+function closeMenu(){header.classList.remove('open');burger.setAttribute('aria-expanded','false')}
+function go(v){
+  Object.values(views).forEach(id=>document.getElementById(id).classList.remove('on'));
+  document.getElementById(views[v]).classList.add('on');
+  Object.values(navMap).forEach(id=>document.getElementById(id).classList.remove('active'));
+  document.getElementById(navMap[v]).classList.add('active');
+  closeMenu();
+  if(lenis){lenis.scrollTo(0,{immediate:true});lenis.resize()} // view swap changes page height
+  else window.scrollTo({top:0,behavior:'instant'});
+}
+burger.onclick=()=>{const open=header.classList.toggle('open');burger.setAttribute('aria-expanded',open)};
+document.querySelectorAll('.cbtn').forEach(b=>b.onclick=()=>{
+  const track=b.closest('section').querySelector('.cases');
+  const slide=track.querySelector('.case');
+  track.scrollBy({left:(slide.getBoundingClientRect().width+16)*Number(b.dataset.dir),behavior:'smooth'});
+});
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  const sel=a.getAttribute('href');
+  if(sel==='#'||a.hasAttribute('data-go'))return; // view switchers handle their own clicks
+  a.addEventListener('click',e=>{
+    const target=document.querySelector(sel);
+    if(!target)return;
+    e.preventDefault();
+    closeMenu();
+    smoothScrollTo(target);
+  });
+});
+// delegação: os cartões dos carrosséis são criados depois deste ponto
+document.addEventListener('click',e=>{
+  const a=e.target.closest('[data-go]');
+  if(!a)return;
+  e.preventDefault();
+  if(a.dataset.slug)abrirCaso(a.dataset.slug);
+  go(a.dataset.go);
+});
+document.querySelectorAll('.menu a.inert').forEach(a=>a.onclick=e=>e.preventDefault());
+document.querySelectorAll('.menu a:not(.inert)').forEach(a=>a.addEventListener('click',closeMenu));
+document.addEventListener('click',e=>{if(header.classList.contains('open')&&!header.contains(e.target))closeMenu()});
+
+/* ─────────────────────────────────────────────────────────────────
+   DADOS → PROTÓTIPO
+
+   Regra única: cada slot só é substituído se o ficheiro existir mesmo.
+   Sem dados.js, com PROJETOS vazio, ou com media em falta, fica o
+   placeholder — o protótipo nunca mostra uma imagem partida.
+   ───────────────────────────────────────────────────────────────── */
+const DADOS = (typeof PROJETOS!=='undefined'&&PROJETOS)||[];
+const CFG   = (typeof SETOR!=='undefined'&&SETOR)||{};
+
+/* substitui o conteúdo de um .phbox por <picture>; m34 é o recorte 3:4
+   que o CSS usa abaixo de 1000px — não é um resize, é outro enquadramento */
+function pintar(box,src,m34,alt){
+  if(!box||!src)return false;
+  const pic=document.createElement('picture');
+  if(m34){const s=document.createElement('source');s.media='(max-width:1000px)';s.srcset=m34;pic.appendChild(s)}
+  const i=document.createElement('img');
+  i.src=src; i.alt=alt||''; i.loading='lazy'; i.decoding='async';
+  pic.appendChild(i);
+  box.classList.add('tem-media'); box.textContent=''; box.appendChild(pic);
+  return true;
+}
+/* Vídeo em loop dentro de um .phbox — o mesmo contrato do pintar(): devolve
+   false se não houver material, para quem chama poder cair na foto.
+   As fontes vão por ordem de preferência e cada uma leva o codec explícito. Sem
+   ele o Safari lê só «video/mp4», escolhe o AV1 que não sabe descodificar e não
+   volta atrás — o cartão ficava preto em vez de tocar o H.264 que vem a seguir. */
+const CODEC={av1:'video/mp4; codecs="av01.0.09M.08"',h264:'video/mp4; codecs="avc1.640028"'};
+function pintarVideo(box,fontes,poster,alt){
+  const uteis=fontes.filter(f=>f&&f.src);
+  if(!box||!uteis.length)return false;
+  const v=document.createElement('video');
+  v.muted=v.loop=v.playsInline=true;
+  v.setAttribute('aria-label',alt||'');
+  /* preload metadata e não auto: um cartão destes pesa dezenas de MB e há vários
+     por carrossel. Só arranca quando entra no ecrã (ver observador abaixo). */
+  v.preload='metadata';
+  if(poster)v.poster=poster;
+  uteis.forEach(f=>{const s=document.createElement('source');s.src=f.src;s.type=f.type;v.appendChild(s)});
+  box.classList.add('tem-media'); box.textContent=''; box.appendChild(v);
+  olhoVideo.observe(v);
+  return true;
+}
+/* toca só o que está à vista. Um carrossel com quatro vídeos a correr fora do
+   ecrã aquece o portátil e não se vê — e em reduced-motion não toca de todo. */
+const olhoVideo=new IntersectionObserver(es=>es.forEach(e=>{
+  if(reduced)return;
+  if(e.isIntersecting)e.target.play().catch(()=>{});
+  else e.target.pause();
+}),{threshold:.25});
+function texto(el,v){if(el&&v){el.textContent=v;el.classList.remove('ph')}}
+
+/* ── hero do setor ── */
+(function(){
+  const box=document.querySelector('.hero .bg .phbox');
+  if(!box)return;
+  if(CFG.heroVideo){
+    const v=document.createElement('video');
+    v.autoplay=v.muted=v.loop=v.playsInline=true;
+    if(CFG.heroPoster)v.poster=CFG.heroPoster;
+    if(CFG.heroWebm){const s=document.createElement('source');s.src=CFG.heroWebm;s.type='video/webm';v.appendChild(s)}
+    const s=document.createElement('source');s.src=CFG.heroVideo;s.type='video/mp4';v.appendChild(s);
+    box.classList.add('tem-media'); box.textContent=''; box.appendChild(v);
+  } else pintar(box,CFG.heroPoster,CFG.heroPoster34,'');
+})();
+
+/* ── carrosséis ── */
+const LEGENDA={visitas:p=>p.ficha&&p.ficha.tipologia,
+               identidade:p=>p.ficha&&p.ficha.pecas,
+               website:p=>p.ficha&&p.ficha.dominio};
+function cartao(p,tipo){
+  const a=document.createElement('a');
+  a.className='case'; a.href='#'; a.dataset.go='caso'; a.dataset.slug=p.slug; a.dataset.tipo=tipo;
+  const leg=(LEGENDA[tipo]?LEGENDA[tipo](p):p.localizacao)||'';
+  a.innerHTML='<div class="phbox"></div>'+
+    '<div class="cbody"><h3></h3><div class="cmeta"><span></span>'+
+    '<span class="csep">·</span><span class="clink">Ver caso<i>→</i></span></div></div>';
+  a.querySelector('h3').textContent=p.nome||p.slug;
+  a.querySelector('.cmeta span').textContent=leg;
+  const m=p.media||{};
+  const proprio={identidade:['ident16','ident34'],
+                 website:['web16','web34']}[tipo];
+  const c16=(proprio&&m[proprio[0]])?m[proprio[0]]:m.card16;
+  const c34=(proprio&&m[proprio[1]])?m[proprio[1]]:m.card34;
+  const box=a.querySelector('.phbox');
+  /* Dois carrosséis aceitam vídeo no cartão, e pela mesma razão: o movimento é
+     que é a peça. Na visita é percorrer a casa; na identidade é a brochura a ser
+     folheada — parada é uma capa, a andar é um objeto impresso. Nos outros a
+     fotografia chega. Sem vídeo no projeto, qualquer um deles cai na foto. */
+  const FILME={visitas:{av1:m.visitaAv1,h264:m.visitaMp4,poster:m.visitaPoster},
+               identidade:{av1:m.identAv1,h264:m.identMp4}}[tipo];
+  const video=FILME&&pintarVideo(box,
+    [{src:FILME.av1,type:CODEC.av1},{src:FILME.h264,type:CODEC.h264}],
+    FILME.poster||c16,p.nome);
+  if(!video&&!pintar(box,c16,c34,p.nome))box.textContent=p.nome||'Imagem';
+  return a;
+}
+['casos','identidade','imagens','visitas','website'].forEach(tipo=>{
+  const id=tipo==='casos'?'casos':tipo;
+  const track=document.querySelector('#'+id+' .cases');
+  if(!track)return;
+  const lista=DADOS.filter(p=>p.aparece_em&&p.aparece_em[tipo]);
+  if(!lista.length)return;            // sem projetos marcados: fica o exemplo
+  track.textContent='';
+  lista.forEach(p=>track.appendChild(cartao(p,tipo)));
+});
+
+/* ── equipa ── */
+(CFG.equipa||[]).forEach((src,i)=>{
+  pintar(document.querySelectorAll('.team .img')[i],src,null,'');
+});
+
+/* ── página de caso ── */
+function abrirCaso(slug){
+  const p=DADOS.find(x=>x.slug===slug); if(!p)return;
+  const v=document.getElementById('v-caso'); if(!v)return;
+  const f=p.ficha||{},n=p.narrativa||{},m=p.media||{};
+
+  texto(v.querySelector('.crumb .ph'),p.nome);
+  texto(v.querySelector('.cs-hero h1'),p.nome);
+  pintar(v.querySelector('.cs-hero .phbox'),m.hero,null,p.nome);
+
+  [f.promotor,f.concelho,f.tipologia,f.unidades,f.arquitetura,
+   f.componentes,f.solucao,f.ano]
+    .forEach((val,i)=>texto(v.querySelectorAll('.credits strong')[i],val));
+
+  [n.desafio,n.posicionamento,n.execucao,n.resultado]
+    .forEach((val,i)=>texto(v.querySelectorAll('.csnarr p')[i],val));
+
+  // ordem em DOM: 4 imagens do caso, frame do filme, frame da visita
+  const slots=v.querySelectorAll('.media-full .phbox,.media-2 .phbox');
+  (m.caso||[]).forEach((src,i)=>pintar(slots[i],src,null,p.nome));
+
+  (p.resultados||[]).forEach((r,i)=>{
+    const el=v.querySelectorAll('.result')[i]; if(!el||!r||!r.valor)return;
+    texto(el.querySelector('strong'),r.valor);
+    texto(el.querySelector('span'),r.metrica);
+  });
+
+  const t=p.testemunho||{};
+  texto(v.querySelector('.quote p'),t.citacao?'“'+t.citacao+'”':null);
+  texto(v.querySelector('.quote .who .ph'),t.autor);
+
+  // anterior / seguinte, circular sobre a lista publicada
+  const i=DADOS.indexOf(p),prev=DADOS[(i-1+DADOS.length)%DADOS.length],next=DADOS[(i+1)%DADOS.length];
+  v.querySelectorAll('.csnav a').forEach((a,k)=>{
+    const alvo=k===0?prev:next;
+    a.dataset.slug=alvo.slug;
+    texto(a.querySelector('strong'),alvo.nome);
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+# ── Sistema ────────────────────────────────────────────────────────────────
+.DS_Store
+.vercel/
+node_modules/
+
+# ── Media ──────────────────────────────────────────────────────────────────
+# A pasta media/ pesa ~530 MB, mas o site serve ~44 MB. O resto são os
+# originais que alimentam os geradores: renders a 20 MB, masters de brochura,
+# o reel do hero em 30 MB. Ficam no Dropbox — são entrada, não saída.
+#
+# Mesma filosofia do publicar.sh: em vez de uma lista de exclusões a apodrecer,
+# ignora-se tudo e reintroduz-se só o que o site serve. Um master novo largado
+# na pasta fica de fora por omissão, não por esquecimento.
+media/**
+!media/**/
+!media/README.md
+!media/*.sh
+!media/_modelo/**
+
+# Derivados servidos — nomes canónicos, gerados por media/gerar-recortes.sh
+!media/projetos/*/cards/**
+!media/projetos/*/caso/**
+!media/projetos/*/identidade/**
+!media/projetos/*/visita/**
+!media/setor/hero/**
+
+# 41 MB para os mesmos 42 s que o visita.mp4 faz em 13 MB — a exportação AV1
+# saiu mal. Já está fora do deploy pelo publicar.sh; também não entra aqui.
+media/projetos/*/visita/visita.av1.mp4
+
+# O master do reel do hero (30 MB) está dentro de setor/hero/ por arrumação,
+# mas é entrada como qualquer outro: dele sai o hero.mp4 de 8 MB. Fica de fora.
+media/setor/hero/mini reel landing page real estate.mp4
+
+# Os *-frame.jpg ficam: são pequenos e são a entrada de que o gerar-recortes.sh
+# precisa para refazer os posters sem ter o master do vídeo à mão.
