@@ -885,6 +885,20 @@ if(form)form.addEventListener('submit',e=>{
 const DADOS=(typeof PROJETOS!=='undefined'&&PROJETOS)||[];
 const CFG=(typeof SETOR!=='undefined'&&SETOR)||{};
 
+/* ── Destaques da campanha ───────────────────────────────────────────────
+   Que empreendimento ocupa os lugares que valem mais: o primeiro cartão da
+   obra e cada miniatura de componente. É escolha editorial da campanha e vive
+   aqui, não no `ordem` do projeto.json — esse é ordem de arquivo e comanda os
+   carrosséis da página de setor. Mexer lá para acertar aqui arrastava a outra
+   página atrás.
+
+   Um slug que não exista, ou que não tenha o media preciso, é ignorado sem
+   ruído e o lugar volta à ordem normal. */
+const DESTAQUE={
+  obra:      'va-villa-heaven-vale-do-lobo',   // 1.º cartão de «Selected work»
+  imagens:   'vanguard-comporta',              // miniatura de «3D visualisation»
+};
+
 function pintar(box,src,m34,alt){
   if(!box||!src)return false;
   const pic=document.createElement('picture');
@@ -938,6 +952,9 @@ function pintarVideo(box,fontes,poster,alt){
   if(!track)return;
   const lista=DADOS.filter(p=>p.aparece_em&&p.aparece_em.imagens&&p.media&&p.media.card16);
   if(!lista.length)return;                 // no data: the three examples stay
+  /* o destaque sobe ao primeiro lugar; os outros mantêm a ordem entre si */
+  const i=lista.findIndex(p=>p.slug===DESTAQUE.obra);
+  if(i>0)lista.unshift(lista.splice(i,1)[0]);
   track.textContent='';
   lista.forEach(p=>{
     const el=document.createElement('div');
@@ -957,7 +974,11 @@ function pintarVideo(box,fontes,poster,alt){
 (function(){
   document.querySelectorAll('.compc .thumb').forEach(slot=>{
     const tipo=slot.dataset.slot;
-    const p=DADOS.find(x=>x.aparece_em&&x.aparece_em[tipo]);
+    const temComponente=x=>x.aparece_em&&x.aparece_em[tipo];
+    /* destaque primeiro; se não houver, ou se o escolhido não tiver este
+       componente, cai no primeiro da lista como antes */
+    const p=DADOS.find(x=>x.slug===DESTAQUE[tipo]&&temComponente(x))
+          ||DADOS.find(temComponente);
     if(!p)return;
     const m=p.media||{},box=slot.querySelector('.phbox');
     const proprio={identidade:['ident16','ident34'],website:['web16','web34']}[tipo];
