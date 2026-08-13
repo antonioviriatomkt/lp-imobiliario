@@ -13,6 +13,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&display=swap" rel="stylesheet">
+<!-- Marca o documento antes da primeira pintura. Tudo o que começa escondido
+     para entrar depois pende deste `.js`: sem script — ou se o script morrer —
+     nada se esconde e a página fica exatamente como estava. O sítio é aqui e
+     não no fim do body, senão o hero pintava visível e só depois desaparecia. -->
+<script>document.documentElement.classList.add('js')</script>
 <style>
 /* ═══════════════════════════════════════════════════════════════════════
    Same "papel" system as index.html. Copied rather than shared: this page
@@ -87,6 +92,13 @@ a{color:inherit;text-decoration:none}
 .phbox.tem-media{background:none;border:0;padding:0;color:transparent;overflow:hidden}
 .phbox.tem-media>*{width:100%;height:100%;display:block}
 .phbox img,.phbox video{width:100%;height:100%;object-fit:cover;display:block}
+/* Os vídeos de cartão cortavam do gradiente de proxy fotográfico para o
+   primeiro frame. Vê-se sobretudo no cartão do site, que não leva poster de
+   propósito — o poster teria de ser o frame 0 extraído à mão e não há. Isto
+   não é enfeite: é a emenda de um salto. Fica também em reduced-motion, por
+   ser precisamente aquilo que a preferência quer — menos sobressalto. */
+.phbox video.a-entrar{opacity:0;transition:opacity 300ms var(--ease-out)}
+.phbox video.a-entrar.pronto{opacity:1}
 .phbox{
   background:
     repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 14px,transparent 14px 28px),
@@ -180,6 +192,28 @@ header .wrap{max-width:none;padding:0 10px 0 26px}
   .hero .scroll-cue{display:flex}
 }
 
+/* ── entrada do hero ─────────────────────────────────────────────────────
+   Os 700ms passam o orçamento de 300ms da UI, e é de propósito: isto é o
+   momento de marketing da página, não um controlo. O filme estabelece-se
+   primeiro e o texto pousa por cima. É a única coisa aqui que existe só para
+   dar sensação, e é onde o orçamento de encanto deve ser gasto.
+
+   Só opacity e transform, e os CTA continuam clicáveis desde o primeiro
+   frame: opacity:0 não bloqueia cliques e não se toca em pointer-events.
+   Tudo pende do `.js` posto no <head> — sem script, nada disto se esconde. */
+.js .hero .wrap>*{
+  opacity:0;transform:translateY(12px);
+  transition:opacity 700ms var(--ease-out),transform 700ms var(--ease-out)}
+.js .hero.pronto .wrap>*{opacity:1;transform:none}
+/* escada curta — 90ms. Mais do que isto lê-se como três animações em fila
+   em vez de uma frase a assentar */
+.js .hero .wrap>*:nth-child(2){transition-delay:90ms}
+.js .hero .wrap>*:nth-child(3){transition-delay:180ms}
+/* o indicador não leva translate: o transform dele é o translateX(-50%) que o
+   centra, e sobrepor-lhe um translateY tirava-o do meio */
+.js .hero .scroll-cue{opacity:0;transition:opacity 700ms var(--ease-out) 340ms}
+.js .hero.pronto .scroll-cue{opacity:1}
+
 /* ── sections ───────────────────────────────────────────────────────── */
 section{position:relative}
 .sec{padding:92px 0}
@@ -220,9 +254,12 @@ section{position:relative}
 .sheadr{display:flex;align-items:center;gap:12px;flex:none}
 .cnav{display:flex;gap:8px}
 .cbtn{width:40px;height:40px;flex:none;border-radius:50%;border:1px solid var(--linha-forte);background:none;color:var(--texto);font:inherit;font-size:.95rem;cursor:pointer;
-  transition:transform 160ms var(--ease-out),border-color 200ms ease,color 200ms ease,background-color 200ms ease}
+  transition:transform 160ms var(--ease-out),border-color 200ms ease,color 200ms ease,background-color 200ms ease,opacity 200ms ease}
 .cbtn:hover{border-color:var(--sinal);color:var(--sinal);background-color:var(--sinal-fundo)}
 .cbtn:active{transform:scale(.92)}
+/* Nas pontas do carrossel a seta não fazia nada e continuava a parecer que
+   fazia. Passa a dizê-lo: um clique morto é pior do que um botão apagado. */
+.cbtn:disabled{opacity:.3;pointer-events:none}
 
 /* ── what's included ─────────────────────────────────────────────────
    The four components, as a grid rather than four carousels. Search brings
@@ -331,6 +368,40 @@ textarea{resize:vertical;min-height:88px}
 .cinfo div{margin-bottom:14px}
 .cinfo span{display:block;font-size:.73rem;color:var(--texto-3);margin-bottom:2px}
 .fnote{grid-column:1/-1;font-size:.78rem;color:var(--texto-3)}
+
+/* ── estados do formulário ───────────────────────────────────────────────
+   O momento comercial da página inteira, e até aqui era um alert(). Três
+   coisas em falta: dizer que ouviu, impedir o segundo clique, e não trocar
+   formulário por confirmação com um corte seco.
+
+   A largura do botão é 100%, por isso trocar a legenda não mexe no layout —
+   o crossfade é só da palavra. */
+.fsub{position:relative;overflow:hidden}
+.fsub span{display:block;transition:opacity 160ms ease}
+.form-envia .fsub{pointer-events:none}
+.form-envia .fsub .rotulo{opacity:0}
+.fsub .pendente{position:absolute;inset:0;display:grid;place-items:center;opacity:0}
+.form-envia .fsub .pendente{opacity:1}
+/* ponto que pulsa em vez de spinner a girar: a esta escala um spinner é
+   ruído, e o pulso diz «a trabalhar» com uma propriedade só */
+.fsub .pendente i{width:7px;height:7px;border-radius:50%;background:currentColor;
+  animation:pulso 1s var(--ease-in-out) infinite}
+@keyframes pulso{0%,100%{opacity:.35;transform:scale(.85)}50%{opacity:1;transform:scale(1)}}
+
+/* saída do formulário e entrada da confirmação, pelo mesmo eixo */
+form[data-form="lead"]{transition:opacity 200ms var(--ease-out)}
+.form-feito form[data-form="lead"]{opacity:0;pointer-events:none}
+.obrigado{display:none;background:var(--fundo-eleva);border-radius:var(--r);
+  box-shadow:var(--sombra-2);padding:38px 40px}
+/* Sem `both`, de propósito. Com fill, o estado final da confirmação passava a
+   ser propriedade da animação — e se a animação não corresse, a mensagem que
+   diz que a lead entrou ficava invisível. Assim o repouso é opacity:1 no
+   próprio elemento e a animação só serve para lá chegar: o pior caso passa a
+   ser aparecer sem transição, em vez de não aparecer. */
+.form-feito .obrigado{display:block;animation:sobe 320ms var(--ease-out)}
+@keyframes sobe{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.obrigado h3{margin-bottom:10px}
+.obrigado p{font-size:.95rem}
 /* Honeypot. Not display:none — some autofillers and bots skip hidden inputs
    but happily fill one that is merely off-canvas. */
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
@@ -361,6 +432,13 @@ footer{padding:24px 0 40px}
      passa por baixo dela é o desfoque e uma sombra a subir */
   box-shadow:0 -6px 20px rgba(25,23,20,.06);
 }
+/* A barra estava lá desde o primeiro pixel, por cima de um hero que já tem os
+   dois CTA — no telemóvel via-se «WhatsApp» duas vezes ao mesmo tempo, e a
+   barra tapava conteúdo antes de o ter merecido. Passa a entrar quando o hero
+   sai do ecrã, que é o momento em que o CTA deixa de estar à vista.
+   110% e não 100%: a sombra sobe 6px e ficava a espreitar. */
+.js .sticky{transform:translateY(110%);transition:transform 320ms var(--ease-out)}
+.js .sticky.on{transform:none}
 .sticky .btn{flex:1 1 0;justify-content:center}
 
 @media (hover:hover) and (pointer:fine){
@@ -373,7 +451,20 @@ footer{padding:24px 0 40px}
   .phbox img{transition:none}
   .case:hover .phbox img{transform:none}
   .hero .scroll-cue .rail::after{animation:none;top:0;height:38px;opacity:.7}
+
+  /* Mais suave, não desligado — a preferência é por menos movimento, não por
+     cortes secos. Tudo o que deslocava passa a só esbater, e a escada cai:
+     três atrasos em fila são tempo de espera sem nada a acontecer. */
+  .js .hero .wrap>*{transform:none;transition:opacity 300ms var(--ease-out)}
+  .js .hero .wrap>*:nth-child(2),.js .hero .wrap>*:nth-child(3){transition-delay:0ms}
+  .js .hero .scroll-cue{transition:opacity 300ms var(--ease-out) 120ms}
+  .js .sticky{transform:none;opacity:0;transition:opacity 200ms ease}
+  .js .sticky.on{opacity:1}
+  .fsub .pendente i{animation:none;opacity:.7}
+  .form-feito .obrigado{animation:entra-suave 200ms var(--ease-out)}
+  /* o fade do vídeo fica: é a emenda de um salto, que é o que a preferência quer */
 }
+@keyframes entra-suave{from{opacity:0}to{opacity:1}}
 
 @media(max-width:1000px){
   .comps,.steps{grid-template-columns:1fr 1fr}
@@ -614,9 +705,19 @@ footer{padding:24px 0 40px}
       </div>
       <div class="f-full"><label for="f-need">What do you need to solve?</label><textarea id="f-need" name="need" placeholder="In two lines: what is the commercial problem with this launch?"></textarea></div>
       <div class="hp"><label for="f-website">Leave this empty</label><input id="f-website" name="website" tabindex="-1" autocomplete="off"></div>
-      <div class="f-full"><button class="btn btn-p" style="width:100%;justify-content:center">Request a diagnosis</button></div>
+      <div class="f-full"><button class="btn btn-p fsub" style="width:100%;justify-content:center">
+        <span class="rotulo">Request a diagnosis</span>
+        <span class="pendente" aria-hidden="true"><i></i></span>
+      </button></div>
       <p class="fnote ph">⟨privacy line + link to the privacy policy — required before this page takes a single submission⟩</p>
     </form>
+    <!-- Confirmação. `aria-live` para quem não vê a troca acontecer: sem isto
+         um leitor de ecrã fica no formulário que desapareceu. -->
+    <div class="obrigado" role="status" aria-live="polite">
+      <h3>Thank you — that's with us.</h3>
+      <p>We read every one of these ourselves. You'll hear back from a person, not an autoresponder.</p>
+      <p style="margin-top:14px" class="ph">⟨prototype — nothing was sent. Response-time commitment goes here once the sales team has agreed one.⟩</p>
+    </div>
   </div>
 </section>
 
@@ -823,7 +924,24 @@ document.querySelectorAll('.faq details').forEach(d=>{
   });
 });
 
-/* ---- carousel arrows ---- */
+/* ---- carousel arrows ----
+   Além de andar, as setas passam a saber quando não há para onde. A sincronia
+   corre no scroll (passivo — não bloqueia o gesto), no resize, e outra vez
+   depois de os cartões reais entrarem, que acontece mais abaixo neste script. */
+function sincronizarSetas(track){
+  const sec=track.closest('section'); if(!sec)return;
+  const [ant,seg]=sec.querySelectorAll('.cbtn'); if(!ant||!seg)return;
+  const fim=track.scrollWidth-track.clientWidth;
+  ant.disabled=track.scrollLeft<=1;
+  // -1 de folga: com scroll-snap e larguras fracionárias o scrollLeft final
+  // fica meio pixel abaixo do máximo e o botão nunca chegava a desligar
+  seg.disabled=track.scrollLeft>=fim-1;
+}
+document.querySelectorAll('.cases').forEach(track=>{
+  track.addEventListener('scroll',()=>sincronizarSetas(track),{passive:true});
+  addEventListener('resize',()=>sincronizarSetas(track));
+  sincronizarSetas(track);
+});
 document.querySelectorAll('.cbtn').forEach(b=>b.onclick=()=>{
   const track=b.closest('section').querySelector('.cases');
   const slide=track.querySelector('.case');
@@ -846,11 +964,24 @@ document.querySelectorAll('[data-cta="whatsapp"]').forEach(a=>{
   });
 });
 
-/* ---- form ---- */
+/* ---- form ----
+   O envio a sério ainda não existe: falta o handover server-side para o CRM.
+   O que existe já é o percurso — pendente, depois confirmação — porque é isso
+   que tem de estar desenhado antes de se ligar o endpoint, e não depois.
+   Quando o endpoint chegar, troca-se o espera() pelo fetch e mais nada. */
 const form=document.querySelector('[data-form="lead"]');
-if(form)form.addEventListener('submit',e=>{
+const bloco=form&&form.closest('.cgrid');
+if(form)form.addEventListener('submit',async e=>{
   e.preventDefault();
-  alert('Prototype — the form does not submit. Server-side handover to the CRM still to be built.');
+  if(bloco.classList.contains('form-envia'))return;   // trava o segundo clique
+  bloco.classList.add('form-envia');
+  await new Promise(r=>setTimeout(r,reduced?350:900));
+  bloco.classList.remove('form-envia');
+  bloco.classList.add('form-feito');
+  /* leva o foco para a confirmação — sem isto o teclado fica preso num
+     formulário que já não está no ecrã */
+  const ok=bloco.querySelector('.obrigado');
+  ok.setAttribute('tabindex','-1'); ok.focus({preventScroll:true});
 });
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -901,6 +1032,9 @@ function pintarVideo(box,fontes,poster,alt){
   v.preload='metadata';
   if(poster)v.poster=poster;
   uteis.forEach(f=>{const s=document.createElement('source');s.src=f.src;s.type=f.type;v.appendChild(s)});
+  /* entra em fade em vez de cortar do gradiente para o frame 0 */
+  v.classList.add('a-entrar');
+  v.addEventListener('loadeddata',()=>v.classList.add('pronto'),{once:true});
   box.classList.add('tem-media');box.textContent='';box.appendChild(v);
   olhoVideo.observe(v);
   return true;
@@ -942,6 +1076,33 @@ function pintarVideo(box,fontes,poster,alt){
     pintar(el.querySelector('.phbox'),p.media.card16,p.media.card34,p.nome);
     track.appendChild(el);
   });
+  /* os cartões só existem agora, por isso a largura do rail acabou de mudar —
+     as setas têm de voltar a decidir se estão numa ponta */
+  sincronizarSetas(track);
+})();
+
+/* ── entrada do hero ──
+   Espera pelo primeiro frame do filme para o texto pousar por cima de imagem
+   e não de um rectângulo vazio. O timeout é a rede de segurança: com o vídeo
+   em cache o loadeddata pode já ter passado, e numa ligação má não se deixa
+   o hero escondido à espera dele. O que vier primeiro ganha. */
+(function(){
+  const hero=document.querySelector('.hero'); if(!hero)return;
+  const abrir=()=>hero.classList.add('pronto');
+  const v=hero.querySelector('video');
+  if(v&&v.readyState<2)v.addEventListener('loadeddata',()=>setTimeout(abrir,150),{once:true});
+  else requestAnimationFrame(abrir);
+  setTimeout(abrir,1200);
+})();
+
+/* ── barra fixa do telemóvel ──
+   Entra quando o hero sai do ecrã. Enquanto o hero está à vista os dois CTA
+   dele já estão à mão e a barra só duplicava o WhatsApp e tapava conteúdo. */
+(function(){
+  const barra=document.querySelector('.sticky'),hero=document.querySelector('.hero');
+  if(!barra||!hero)return;
+  new IntersectionObserver(([e])=>barra.classList.toggle('on',!e.isIntersecting),
+    {threshold:0}).observe(hero);
 })();
 
 /* ── component thumbnails ──
