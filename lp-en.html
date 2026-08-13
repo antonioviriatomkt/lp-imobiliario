@@ -31,9 +31,16 @@
 
   --sinal:#A4462E;--sinal-fundo:rgba(164,70,46,.08);--sinal-linha:rgba(164,70,46,.32);
 
-  --fundo:var(--papel-1);--fundo-alt:var(--papel-2);
-  --fundo-eleva:var(--papel-0);--fundo-poco:var(--papel-3);
+  /* Um só fundo. As secções deixaram de alternar --papel-1 / --papel-2: o ritmo
+     passa a vir do espaço e da elevação, não de faixas de cor. --fundo-alt fica
+     apontado ao mesmo valor de propósito — assim as secções que o pediam não
+     precisam de ser reescritas, e voltar atrás é mudar uma linha. */
+  --fundo:var(--papel-1);--fundo-alt:var(--papel-1);
+  --fundo-eleva:var(--papel-0);--fundo-poco:var(--papel-1);
   --texto:var(--tinta-1);--texto-2:var(--tinta-2);--texto-3:var(--tinta-3);--texto-fraco:var(--tinta-4);
+  /* Sem filetes. --linha e --linha-forte sobrevivem só para o contorno do botão
+     secundário e para o bordo de vidro do header, que são material do próprio
+     componente e não regras a dividir a página. */
   --linha:rgba(25,23,20,.10);--linha-forte:rgba(25,23,20,.20);--linha-tinta:rgba(25,23,20,.38);
 
   --sobre-img:#FFFFFF;--sobre-img-2:rgba(255,255,255,.74);--linha-img:rgba(255,255,255,.30);
@@ -53,7 +60,10 @@
   --sombra-3:0 16px 40px rgba(25,23,20,.13);
   --vidro:rgba(255,255,255,.72);--vidro-linha:rgba(25,23,20,.09);
 
-  --max:1240px;--r:0;
+  /* Cantos redondos. Dois raios, não um: 16px nas superfícies e no media, 10px
+     nos campos — um input com o mesmo raio de um cartão parece um cartão. Os
+     botões continuam pílulas por decisão própria, como já eram. */
+  --max:1240px;--r:16px;--r-sm:10px;
   --ease-out:cubic-bezier(.23,1,.32,1);
   --ease-in-out:cubic-bezier(.77,0,.175,1);
 }
@@ -183,8 +193,7 @@ section{position:relative}
    LP-ONLY. Proof without numbers, which is all that's authorised: the
    developers, named. Insca runs 15–20 one-line testimonials on the same
    principle — company name alone carries more than an unattributed metric. */
-.clients{border-top:1px solid var(--linha);border-bottom:1px solid var(--linha);
-  background:var(--fundo-alt);padding:26px 0}
+.clients{padding:10px 0 34px}
 .clients .wrap{display:flex;align-items:center;gap:14px 38px;flex-wrap:wrap;justify-content:center}
 .clients .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--texto-3);font-weight:600}
 .clients .name{font-size:.95rem;color:var(--texto-2);font-weight:500}
@@ -197,7 +206,7 @@ section{position:relative}
    is a lot of screen spent on a picture the visitor can't act on. Two shows
    range, which is the actual argument, and keeps the form closer. */
 .case{position:relative;flex:0 0 calc(50% - 8px);scroll-snap-align:start;scroll-snap-stop:always;
-  aspect-ratio:16/10;border-radius:var(--r);overflow:hidden;border:1px solid var(--linha);display:block}
+  aspect-ratio:16/10;border-radius:var(--r);overflow:hidden;display:block}
 .case .phbox{position:absolute;inset:0;border:0}
 .case[data-tipo="visitas"] .phbox video{transform:scale(1.04)}
 /* LP-ONLY. The sector page leaves its cards unveiled and defends the caption
@@ -231,8 +240,12 @@ section{position:relative}
    that language. But this is a landing page: they're the entry, not the
    argument, and four more rails would bury the form. */
 .comps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.compc{background:var(--fundo-eleva);border:1px solid var(--linha);border-radius:var(--r);
-  box-shadow:var(--sombra-1);overflow:hidden;display:flex;flex-direction:column}
+/* Sem filete, o cartão passa a existir só pela superfície branca sobre o papel
+   quente e por uma sombra curta. É pouca diferença de valor, e é de propósito —
+   com um fundo só, dois degraus de elevação chegam para dizer o que é chão e o
+   que é objeto. */
+.compc{background:var(--fundo-eleva);border-radius:var(--r);
+  box-shadow:var(--sombra-2);overflow:hidden;display:flex;flex-direction:column}
 /* 16:9, not 4:3. Every source feeding these four slots is already 16:9 — the
    generator's canonical crop is `cards/16x9.jpg` and the website recording is
    1920×1080 — so a 4:3 box was cropping a quarter off the sides of all of them.
@@ -248,22 +261,28 @@ section{position:relative}
    The one prose block on the page, and it earns its place: the keyword
    research found that German studios sell aesthetics and German agencies
    sell branding, and nobody claims the crossing. This section is the claim. */
-.pos{background:var(--fundo-alt);border-top:1px solid var(--linha);border-bottom:1px solid var(--linha)}
 .posgrid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
 .posgrid h2{max-width:16ch}
 .posgrid p{font-size:1.05rem;margin-bottom:16px}
 .posgrid p:last-child{margin-bottom:0}
-.vs{list-style:none;margin-top:26px;border-top:1px solid var(--linha)}
-.vs li{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--linha);font-size:.94rem;align-items:baseline}
+/* As três linhas eram separadas por filetes. Sem eles, o que as separa é o
+   espaço — daí o salto de 14px para 20px de padding — e o que as agrupa é a
+   coluna de rótulos alinhada à esquerda. */
+.vs{list-style:none;margin-top:24px}
+.vs li{display:flex;gap:16px;padding:20px 0;font-size:.94rem;align-items:baseline}
 .vs .who{flex:0 0 8.5rem;color:var(--texto-3);font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
 .vs .them{color:var(--texto-2)}
 .vs li.us .who{color:var(--sinal)}
 .vs li.us .them{color:var(--texto);font-weight:500}
 
 /* ── steps ──────────────────────────────────────────────────────────── */
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s}
-.step{border-top:2px solid var(--linha-forte);padding-top:20px}
-.step:first-child{border-top-color:var(--sinal)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+/* Os quatro passos eram marcados por uma regra de 2px, com a primeira em
+   terracota. Saiu com os filetes; o número fica a fazer o trabalho, e o acento
+   muda-se de linha para algarismo — mesmo sinal, sem desenhar uma régua. */
+.step{padding-top:4px}
+.step .num{font-size:.78rem}
+.step:first-child .num{color:var(--sinal)}
 .step h3{font-size:1.02rem;margin-bottom:8px}
 .step p{font-size:.9rem}
 
@@ -272,8 +291,10 @@ section{position:relative}
    as the primary CTA the friction is near zero, and a page that filters
    nobody hands the sales team a list nobody wants to call. */
 .qual{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.qcol{border:1px solid var(--linha);border-radius:var(--r);padding:30px 32px;background:var(--fundo-eleva);box-shadow:var(--sombra-1)}
-.qcol.yes{border-color:var(--sinal-linha);background:linear-gradient(180deg,var(--sinal-fundo),transparent 34%),var(--fundo-eleva)}
+.qcol{border-radius:var(--r);padding:32px 34px;background:var(--fundo-eleva);box-shadow:var(--sombra-2)}
+/* a coluna «sim» distinguia-se por bordo terracota + lavagem; sem bordo, a
+   lavagem sozinha tem de dizê-lo, por isso desce mais pelo cartão abaixo */
+.qcol.yes{background:linear-gradient(180deg,var(--sinal-fundo),transparent 52%),var(--fundo-eleva)}
 .qcol h3{margin-bottom:18px}
 .qcol ul{list-style:none}
 .qcol li{font-size:.93rem;color:var(--texto-2);padding:8px 0 8px 26px;position:relative}
@@ -281,8 +302,13 @@ section{position:relative}
 .qcol.yes li::before{content:"✓";color:var(--sinal)}
 
 /* ── faq ────────────────────────────────────────────────────────────── */
-.faq details{border-top:1px solid var(--linha)}
-.faq details:last-of-type{border-bottom:1px solid var(--linha)}
+/* Uma lista com seis entradas separadas só por espaço fica mole. Sem filetes, o
+   que dá borda a cada pergunta é a própria superfície — cada uma passa a cartão,
+   que é a mesma peça que o resto da página já usa. */
+.faq{display:flex;flex-direction:column;gap:8px}
+.faq details{background:var(--fundo-eleva);border-radius:var(--r);box-shadow:var(--sombra-1);
+  padding:0 26px;transition:box-shadow 240ms ease}
+.faq details[open]{box-shadow:var(--sombra-2)}
 .faq summary{padding:20px 0;cursor:pointer;font-size:.98rem;font-weight:500;list-style:none;display:flex;justify-content:space-between;gap:20px;transition:color 200ms ease}
 .faq summary::-webkit-details-marker{display:none}
 .faq summary::after{
@@ -297,15 +323,20 @@ section{position:relative}
 .faq .ans{padding:0 0 22px;max-width:72ch;font-size:.93rem;color:var(--texto-2)}
 
 /* ── form ───────────────────────────────────────────────────────────── */
-.contact{background:var(--fundo-alt);border-top:1px solid var(--linha)}
 .cgrid{display:grid;grid-template-columns:.85fr 1.15fr;gap:60px;align-items:start}
 form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .f-full{grid-column:1/-1}
 label{display:block;font-size:.75rem;color:var(--texto-3);margin-bottom:6px}
-input,select,textarea{width:100%;background:var(--papel-0);border:1px solid var(--linha-forte);border-radius:var(--r);padding:11px 13px;color:var(--texto);font-family:inherit;font-size:.9rem}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sinal);box-shadow:0 0 0 3px var(--sinal-fundo)}
+/* Sem bordo, o campo é a superfície branca sobre o papel. Perde-se um sinal de
+   afordância, por isso o foco tem de ser mais explícito do que era: anel a
+   sério, não uma mudança de cor de linha que já não existe. */
+input,select,textarea{width:100%;background:var(--papel-0);border:0;border-radius:var(--r-sm);
+  padding:13px 15px;color:var(--texto);font-family:inherit;font-size:.9rem;
+  box-shadow:var(--sombra-1);transition:box-shadow 200ms ease}
+input:focus,select:focus,textarea:focus{outline:none;
+  box-shadow:0 0 0 2px var(--sinal),0 0 0 6px var(--sinal-fundo)}
 textarea{resize:vertical;min-height:88px}
-.cinfo{border-top:1px solid var(--linha);padding-top:22px;margin-top:26px}
+.cinfo{padding-top:4px;margin-top:30px}
 .cinfo div{margin-bottom:14px}
 .cinfo span{display:block;font-size:.73rem;color:var(--texto-3);margin-bottom:2px}
 .fnote{grid-column:1/-1;font-size:.78rem;color:var(--texto-3)}
@@ -314,7 +345,7 @@ textarea{resize:vertical;min-height:88px}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 
 /* ── closing band ───────────────────────────────────────────────────── */
-.cta-band{padding:44px;border:1px solid var(--sinal-linha);border-radius:var(--r);background:var(--sinal-fundo);
+.cta-band{padding:48px;border-radius:var(--r);background:var(--sinal-fundo);
   display:flex;justify-content:space-between;align-items:center;gap:26px;flex-wrap:wrap}
 .cta-band h3{font-size:clamp(1.3rem,2.4vw,1.9rem);max-width:22ch}
 .cta-band .ctas{display:flex;gap:12px;flex-wrap:wrap}
@@ -322,7 +353,7 @@ textarea{resize:vertical;min-height:88px}
 /* ── footer ─────────────────────────────────────────────────────────
    LP-ONLY. No sitemap: the sector page's footer offers eleven ways out and
    this page has one job. What stays is the legal minimum. */
-footer{border-top:1px solid var(--linha);padding:40px 0 34px}
+footer{padding:24px 0 40px}
 .fbot{display:flex;justify-content:space-between;gap:16px;font-size:.78rem;color:var(--texto-3);flex-wrap:wrap;align-items:center}
 
 /* ── mobile sticky CTA ───────────────────────────────────────────────
@@ -335,7 +366,9 @@ footer{border-top:1px solid var(--linha);padding:40px 0 34px}
   padding:10px 12px calc(10px + env(safe-area-inset-bottom));gap:10px;
   background:rgba(250,247,242,.90);
   -webkit-backdrop-filter:blur(20px) saturate(140%);backdrop-filter:blur(20px) saturate(140%);
-  border-top:1px solid var(--linha);
+  /* o filete de topo saiu com os outros; o que separa a barra do conteúdo que
+     passa por baixo dela é o desfoque e uma sombra a subir */
+  box-shadow:0 -6px 20px rgba(25,23,20,.06);
 }
 .sticky .btn{flex:1 1 0;justify-content:center}
 
@@ -472,7 +505,7 @@ footer{border-top:1px solid var(--linha);padding:40px 0 34px}
 <!-- ══════════════════════════════════════════════════════════════════
      COMPONENTS — named in the language people search in
      ══════════════════════════════════════════════════════════════════ -->
-<section class="sec tight" style="border-top:1px solid var(--linha)">
+<section class="sec tight">
   <div class="wrap">
     <div class="shead">
       <div>
@@ -649,7 +682,7 @@ footer{border-top:1px solid var(--linha);padding:40px 0 34px}
 <!-- ══════════════════════════════════════════════════════════════════
      QUALIFICATION
      ══════════════════════════════════════════════════════════════════ -->
-<section class="sec" style="background:var(--fundo-alt);border-top:1px solid var(--linha)">
+<section class="sec">
   <div class="wrap">
     <div class="shead">
       <div>
