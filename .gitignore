@@ -22,6 +22,7 @@ media/**
 !media/projetos/*/caso/**
 !media/projetos/*/identidade/**
 !media/projetos/*/visita/**
+!media/projetos/*/website/**
 !media/setor/hero/**
 
 # 41 MB para os mesmos 42 s que o visita.mp4 faz em 13 MB — a exportação AV1

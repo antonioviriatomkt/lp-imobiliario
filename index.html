@@ -1129,10 +1129,15 @@ function cartao(p,tipo){
      folheada — parada é uma capa, a andar é um objeto impresso. Nos outros a
      fotografia chega. Sem vídeo no projeto, qualquer um deles cai na foto. */
   const FILME={visitas:{av1:m.visitaAv1,h264:m.visitaMp4,poster:m.visitaPoster},
-               identidade:{av1:m.identAv1,h264:m.identMp4}}[tipo];
+               identidade:{av1:m.identAv1,h264:m.identMp4},
+               /* fallback:false — o poster do website é o primeiro frame ou
+                  nenhum. O 16x9 mais próximo é uma fotografia do empreendimento,
+                  e mostrá-la um instante antes de uma gravação de um site é um
+                  salto pior do que não mostrar nada. */
+               website:{av1:m.webAv1,h264:m.webMp4,poster:m.webPoster,fallback:false}}[tipo];
   const video=FILME&&pintarVideo(box,
     [{src:FILME.av1,type:CODEC.av1},{src:FILME.h264,type:CODEC.h264}],
-    FILME.poster||c16,p.nome);
+    FILME.poster||(FILME.fallback===false?null:c16),p.nome);
   if(!video&&!pintar(box,c16,c34,p.nome))box.textContent=p.nome||'Imagem';
   return a;
 }

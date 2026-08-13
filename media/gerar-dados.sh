@@ -46,6 +46,17 @@ for j in sorted(glob.glob('projetos/*/projeto.json')):
         'identMp4': rel(existe(d + '/identidade/identidade.mp4')),
         'web16':   rel(existe(d + '/website/16x9.jpg')),
         'web34':   rel(existe(d + '/website/3x4.jpg')),
+        # website: mesmo argumento da identidade e da visita. Um site parado é
+        # uma fotografia de um ecrã; a andar vê-se que é um site — o scroll, o
+        # menu, o hero a mexer. Por isso o cartão aceita vídeo. Sem ele cai no
+        # 16x9.jpg do próprio site e, se nem esse existir, no cartão do projeto.
+        'webAv1':  rel(existe(d + '/website/website.av1.mp4')),
+        'webMp4':  rel(existe(d + '/website/website.mp4')),
+        # o poster é o primeiro frame, extraído à mão como o do hero e o da
+        # visita. Sem ele o browser mostra o frame 0 assim que tem metadata,
+        # o que também serve — o que não serve é um poster que seja outro
+        # frame, porque aí vê-se o salto quando o vídeo arranca.
+        'webPoster': rel(existe(d + '/website/poster.jpg')),
         'suite16': rel(existe(d + '/suite/16x9.jpg')),
         'suite34': rel(existe(d + '/suite/3x4.jpg')),
         'hero':    rel(existe(d + '/caso/hero.jpg')),

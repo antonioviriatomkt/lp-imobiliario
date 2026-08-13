@@ -233,7 +233,12 @@ section{position:relative}
 .comps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .compc{background:var(--fundo-eleva);border:1px solid var(--linha);border-radius:var(--r);
   box-shadow:var(--sombra-1);overflow:hidden;display:flex;flex-direction:column}
-.compc .thumb{aspect-ratio:4/3;position:relative}
+/* 16:9, not 4:3. Every source feeding these four slots is already 16:9 — the
+   generator's canonical crop is `cards/16x9.jpg` and the website recording is
+   1920×1080 — so a 4:3 box was cropping a quarter off the sides of all of them.
+   On the website card that meant losing the edges of the page, which is most of
+   what says "this is a website". */
+.compc .thumb{aspect-ratio:16/9;position:relative}
 .compc .thumb .phbox{position:absolute;inset:0;border:0}
 .compc .body{padding:22px 24px 26px}
 .compc h3{margin-bottom:8px}
@@ -925,11 +930,19 @@ function pintarVideo(box,fontes,poster,alt){
     const proprio={identidade:['ident16','ident34'],website:['web16','web34']}[tipo];
     const c16=(proprio&&m[proprio[0]])?m[proprio[0]]:m.card16;
     const c34=(proprio&&m[proprio[1]])?m[proprio[1]]:m.card34;
+    /* Three of the four accept video, and for the same reason: the movement is
+       the piece. A tour is walking the house, a brochure is being leafed, a
+       website is being scrolled — still, each one is just a photograph of a
+       thing. `fallback:false` on the website says: if there is no first-frame
+       poster, use none. The others can fall back to their own still, but the
+       website's nearest still is a photo of the villa, and flashing that before
+       a recording of a web page is a worse jump than a moment of empty box. */
     const FILME={visitas:{av1:m.visitaAv1,h264:m.visitaMp4,poster:m.visitaPoster},
-                 identidade:{av1:m.identAv1,h264:m.identMp4}}[tipo];
+                 identidade:{av1:m.identAv1,h264:m.identMp4},
+                 website:{av1:m.webAv1,h264:m.webMp4,poster:m.webPoster,fallback:false}}[tipo];
     const video=FILME&&pintarVideo(box,
       [{src:FILME.av1,type:CODEC.av1},{src:FILME.h264,type:CODEC.h264}],
-      FILME.poster||c16,p.nome);
+      FILME.poster||(FILME.fallback===false?null:c16),p.nome);
     if(!video)pintar(box,c16,c34,p.nome);
   });
 })();
