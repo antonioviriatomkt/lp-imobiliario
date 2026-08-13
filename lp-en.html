@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Campaign landing page. Paid traffic only, and deliberately out of the index:
+     the permanent sector page targets the same terms and the two would
+     cannibalise each other. The header on Vercel says the same thing; this tag
+     is the belt to that pair of braces. -->
+<meta name="robots" content="noindex, nofollow">
+<title>Architectural visualisation for property developers · Viriato</title>
+<meta name="description" content="Images, films, virtual tours and the sales website for a residential development — produced by one team, positioned before anything is drawn.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════════════
+   Same "papel" system as index.html. Copied rather than shared: this page
+   is going to be lifted out into its own deployment with its own tracking
+   and its own domain, and a shared stylesheet would make that a merge
+   instead of a move. Anything below that diverges from index.html is
+   marked LP-ONLY and exists because a campaign page has one job.
+   ═══════════════════════════════════════════════════════════════════════ */
+:root{
+  --papel-0:#FFFFFF;--papel-1:#FAF7F2;--papel-2:#F3EFE8;--papel-3:#EAE4DA;
+
+  --tinta-1:#191714;   /* 16.0:1 · headings, primary ink */
+  --tinta-2:#4E4941;   /*  8.3:1 · body copy            */
+  --tinta-3:#6F685D;   /*  5.1:1 · meta, labels — AA    */
+  --tinta-4:#A79F92;   /*  2.5:1 · NON-TEXT: rules, disabled */
+
+  --sinal:#A4462E;--sinal-fundo:rgba(164,70,46,.08);--sinal-linha:rgba(164,70,46,.32);
+
+  --fundo:var(--papel-1);--fundo-alt:var(--papel-2);
+  --fundo-eleva:var(--papel-0);--fundo-poco:var(--papel-3);
+  --texto:var(--tinta-1);--texto-2:var(--tinta-2);--texto-3:var(--tinta-3);--texto-fraco:var(--tinta-4);
+  --linha:rgba(25,23,20,.10);--linha-forte:rgba(25,23,20,.20);--linha-tinta:rgba(25,23,20,.38);
+
+  --sobre-img:#FFFFFF;--sobre-img-2:rgba(255,255,255,.74);--linha-img:rgba(255,255,255,.30);
+  --halo-img:0 1px 1px rgba(20,18,15,.78),0 2px 10px rgba(20,18,15,.72),0 4px 34px rgba(20,18,15,.58);
+  --halo-hero:0 1px 2px rgba(20,18,15,.34),0 2px 14px rgba(20,18,15,.36),0 6px 48px rgba(20,18,15,.30);
+  --tinta-hero:rgba(20,18,15,.12);
+  --cor-hero:rgba(164,70,46,.05);
+  --veu-hero:
+    radial-gradient(ellipse 150% 128% at 50% 100%,
+      rgba(20,18,15,.72) 0%,rgba(20,18,15,.44) 34%,rgba(20,18,15,.19) 60%,transparent 88%),
+    linear-gradient(to top,
+      rgba(20,18,15,.52) 0%,rgba(20,18,15,.25) 34%,transparent 74%);
+  --foto:linear-gradient(152deg,#C9BCA7 0%,#9E907B 46%,#5E564A 100%);
+
+  --sombra-1:0 1px 2px rgba(25,23,20,.05);
+  --sombra-2:0 2px 8px rgba(25,23,20,.06),0 12px 28px rgba(25,23,20,.07);
+  --sombra-3:0 16px 40px rgba(25,23,20,.13);
+  --vidro:rgba(255,255,255,.72);--vidro-linha:rgba(25,23,20,.09);
+
+  --max:1240px;--r:0;
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ease-in-out:cubic-bezier(.77,0,.175,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:96px}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto !important}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+.lenis.lenis-stopped{overflow:hidden}
+body{background:var(--fundo);color:var(--texto);font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 28px}
+h1,h2,h3,h4{line-height:1.08;font-weight:500;letter-spacing:-.026em}
+h1{font-size:clamp(2.4rem,6vw,4.6rem);font-weight:400}
+h2{font-size:clamp(1.9rem,4.2vw,3.1rem)}
+h3{font-size:1.15rem;font-weight:500;letter-spacing:-.01em}
+p{color:var(--texto-2)}
+a{color:inherit;text-decoration:none}
+
+/* placeholders — none of these may reach production */
+.ph{color:var(--texto-3);border-bottom:1px dashed var(--texto-fraco);font-style:normal}
+.phbox.tem-media{background:none;border:0;padding:0;color:transparent;overflow:hidden}
+.phbox.tem-media>*{width:100%;height:100%;display:block}
+.phbox img,.phbox video{width:100%;height:100%;object-fit:cover;display:block}
+.phbox{
+  background:
+    repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 14px,transparent 14px 28px),
+    var(--foto);
+  border:0;
+  display:grid;place-items:center;color:rgba(255,255,255,.5);
+  font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:16px;
+}
+.hero .wrap,.cbody{color:var(--sobre-img)}
+.hero .ph,.cbody .ph{color:var(--sobre-img);border-bottom-color:var(--linha-img)}
+
+/* ── header ─────────────────────────────────────────────────────────────
+   LP-ONLY. The sector page carries five menu items; this one carries none.
+   A campaign page has a single path, and every link that isn't the CTA is
+   a way off it. What's left is the wordmark (trust) and the two actions. */
+header{
+  position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:200;
+  width:calc(100% - 36px);max-width:1180px;border-radius:100px;
+  background:var(--vidro);
+  -webkit-backdrop-filter:blur(20px) saturate(140%);backdrop-filter:blur(20px) saturate(140%);
+  border:1px solid var(--vidro-linha);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.6),
+    var(--sombra-1),
+    0 10px 26px rgba(25,23,20,.07);
+}
+header .wrap{max-width:none;padding:0 10px 0 26px}
+.nav{display:flex;align-items:center;justify-content:space-between;height:58px}
+.logo{font-weight:600;letter-spacing:.2em;font-size:.9rem;color:var(--texto)}
+.navr{display:flex;align-items:center;gap:8px}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:100px;font-size:.85rem;font-weight:500;border:1px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap;flex:none;
+  transition:transform 160ms var(--ease-out),border-color 200ms ease,background-color 200ms ease,filter 200ms ease,box-shadow 240ms ease}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--tinta-1);color:var(--papel-1)}
+.btn-p:hover{background:#000;box-shadow:var(--sombra-2)}
+.btn-s{border-color:var(--linha-forte);color:var(--texto)}
+.btn-s:hover{border-color:var(--linha-tinta);background-color:rgba(25,23,20,.035)}
+.btn-sm{padding:8px 16px;font-size:.8rem}
+/* WhatsApp is the primary action everywhere it appears, so it gets the one
+   chromatic accent the system allows. The glyph is inline SVG — an emoji
+   would render green on one platform and flat grey on another, and this
+   button is the campaign's main conversion. */
+.btn-wa{background:var(--sinal);color:var(--papel-0)}
+.btn-wa:hover{background:#8E3B26;box-shadow:var(--sombra-2)}
+.btn-wa svg{width:15px;height:15px;fill:currentColor;flex:none}
+
+/* ── hero ───────────────────────────────────────────────────────────── */
+.hero{position:relative;height:min(94vh,880px);min-height:600px;
+  display:flex;align-items:center;justify-content:center}
+.hero .bg{position:absolute;inset:0}
+.hero .bg .phbox{width:100%;height:100%;border:0;font-size:.72rem}
+.hero .bg::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(var(--cor-hero),var(--cor-hero)),var(--tinta-hero);pointer-events:none}
+/* LP-ONLY: the sector hero has no veil — its title carries itself over a
+   picture we chose. This one sits above a subtitle and two buttons, so the
+   bottom half needs to darken or the secondary button disappears into a sky. */
+.hero .veil{position:absolute;inset:0;background:var(--veu-hero);pointer-events:none}
+.hero .wrap{position:relative;z-index:3;text-align:center;
+  width:calc(100% - 36px);max-width:1180px;margin:0 auto;padding:0 27px}
+.hero h1{font-size:clamp(2.4rem,6.2vw,5.1rem);font-weight:400;line-height:1.05;letter-spacing:-.02em;
+  max-width:19ch;margin:0 auto;text-shadow:var(--halo-hero)}
+/* One line. The brief is explicit: nothing above the fold runs past two
+   lines, and at this measure one is what fits on a phone. */
+/* not --sobre-img-2: that value is tuned for a caption sitting in the darkest
+   part of a veil, and this line sits mid-frame where the veil has barely
+   started. Over a bright pool it went soft. */
+.hero .sub{margin:22px auto 0;max-width:56ch;font-size:clamp(1rem,1.7vw,1.19rem);
+  color:rgba(255,255,255,.90);text-shadow:var(--halo-hero)}
+.hero .ctas{margin-top:30px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+/* Over photography the secondary button needs a light border, not the page's
+   ink border — the dark one vanishes against a dark frame. */
+.hero .btn-s{border-color:var(--linha-img);color:var(--sobre-img);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.hero .btn-s:hover{border-color:var(--sobre-img);background-color:rgba(255,255,255,.12)}
+
+.hero .scroll-cue{
+  display:none;position:absolute;z-index:3;left:50%;bottom:26px;transform:translateX(-50%);
+  flex-direction:column;align-items:center;gap:10px;
+  color:var(--sobre-img);text-shadow:var(--halo-hero);
+  font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;font-weight:500;
+  text-decoration:none;padding:6px 10px;
+}
+.hero .scroll-cue .rail{position:relative;width:1px;height:38px;background:rgba(255,255,255,.5);overflow:hidden;
+  box-shadow:0 0 12px rgba(20,18,15,.55)}
+.hero .scroll-cue .rail::after{content:'';position:absolute;left:0;width:1px;height:14px;
+  background:var(--sobre-img);animation:cue 2.1s var(--ease-out) infinite}
+@keyframes cue{0%{top:-14px}55%,100%{top:38px}}
+@media (min-width:1200px){
+  .hero{height:100vh;height:100dvh}
+  .hero .scroll-cue{display:flex}
+}
+
+/* ── sections ───────────────────────────────────────────────────────── */
+section{position:relative}
+.sec{padding:92px 0}
+.sec.tight{padding:64px 0}
+.shead{display:flex;justify-content:space-between;align-items:flex-end;gap:36px;margin-bottom:38px}
+.shead p{max-width:58ch;margin-top:12px;font-size:1.02rem}
+.num{font-size:.7rem;letter-spacing:.16em;color:var(--texto-3);font-weight:600;display:block;margin-bottom:14px}
+.eyebrow{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--texto-3);font-weight:600;margin-bottom:14px}
+
+/* ── client strip ────────────────────────────────────────────────────
+   LP-ONLY. Proof without numbers, which is all that's authorised: the
+   developers, named. Insca runs 15–20 one-line testimonials on the same
+   principle — company name alone carries more than an unattributed metric. */
+.clients{border-top:1px solid var(--linha);border-bottom:1px solid var(--linha);
+  background:var(--fundo-alt);padding:26px 0}
+.clients .wrap{display:flex;align-items:center;gap:14px 38px;flex-wrap:wrap;justify-content:center}
+.clients .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--texto-3);font-weight:600}
+.clients .name{font-size:.95rem;color:var(--texto-2);font-weight:500}
+
+/* ── work carousel ──────────────────────────────────────────────────── */
+.cases{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.cases::-webkit-scrollbar{display:none}
+/* LP-ONLY: two-up on desktop instead of the sector page's full-width one-up.
+   Nothing here links anywhere — with no case pages to open, a full-width card
+   is a lot of screen spent on a picture the visitor can't act on. Two shows
+   range, which is the actual argument, and keeps the form closer. */
+.case{position:relative;flex:0 0 calc(50% - 8px);scroll-snap-align:start;scroll-snap-stop:always;
+  aspect-ratio:16/10;border-radius:var(--r);overflow:hidden;border:1px solid var(--linha);display:block}
+.case .phbox{position:absolute;inset:0;border:0}
+.case[data-tipo="visitas"] .phbox video{transform:scale(1.04)}
+/* LP-ONLY. The sector page leaves its cards unveiled and defends the caption
+   with the halo alone — but its cards are full-width with display-size titles.
+   These are half-width with small type, and a white render behind a white
+   caption beats three layers of shadow: "Cristelo · Farimóvel" over Natura
+   Village was unreadable. A scrim from the bottom edge, tall enough for two
+   lines and no taller, leaves the top two-thirds of the photograph untouched. */
+.case::after{content:'';position:absolute;left:0;right:0;bottom:0;height:56%;z-index:1;
+  background:linear-gradient(to top,rgba(20,18,15,.74) 0%,rgba(20,18,15,.34) 44%,transparent 100%);
+  pointer-events:none}
+/* with the scrim carrying the contrast, the halo drops to one layer — it is
+   back to doing what it is for, which is contour, not legibility */
+.cbody{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:28px 30px;max-width:56ch;
+  text-shadow:0 1px 2px rgba(20,18,15,.55)}
+.cbody .cmeta,.cbody .csep{color:rgba(255,255,255,.90)}
+.cbody h3{font-size:clamp(1.15rem,2vw,1.6rem);margin-bottom:6px}
+.cmeta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:.84rem;color:var(--sobre-img-2)}
+.csep{color:var(--sobre-img-2)}
+.sheadr{display:flex;align-items:center;gap:12px;flex:none}
+.cnav{display:flex;gap:8px}
+.cbtn{width:40px;height:40px;flex:none;border-radius:50%;border:1px solid var(--linha-forte);background:none;color:var(--texto);font:inherit;font-size:.95rem;cursor:pointer;
+  transition:transform 160ms var(--ease-out),border-color 200ms ease,color 200ms ease,background-color 200ms ease}
+.cbtn:hover{border-color:var(--sinal);color:var(--sinal);background-color:var(--sinal-fundo)}
+.cbtn:active{transform:scale(.92)}
+
+/* ── what's included ─────────────────────────────────────────────────
+   The four components, as a grid rather than four carousels. Search brings
+   people here on component words — "architectural visualisation", "3d
+   rendering services" — so the components have to be visible and named in
+   that language. But this is a landing page: they're the entry, not the
+   argument, and four more rails would bury the form. */
+.comps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.compc{background:var(--fundo-eleva);border:1px solid var(--linha);border-radius:var(--r);
+  box-shadow:var(--sombra-1);overflow:hidden;display:flex;flex-direction:column}
+.compc .thumb{aspect-ratio:4/3;position:relative}
+.compc .thumb .phbox{position:absolute;inset:0;border:0}
+.compc .body{padding:22px 24px 26px}
+.compc h3{margin-bottom:8px}
+.compc p{font-size:.9rem}
+
+/* ── positioning ─────────────────────────────────────────────────────
+   The one prose block on the page, and it earns its place: the keyword
+   research found that German studios sell aesthetics and German agencies
+   sell branding, and nobody claims the crossing. This section is the claim. */
+.pos{background:var(--fundo-alt);border-top:1px solid var(--linha);border-bottom:1px solid var(--linha)}
+.posgrid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.posgrid h2{max-width:16ch}
+.posgrid p{font-size:1.05rem;margin-bottom:16px}
+.posgrid p:last-child{margin-bottom:0}
+.vs{list-style:none;margin-top:26px;border-top:1px solid var(--linha)}
+.vs li{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--linha);font-size:.94rem;align-items:baseline}
+.vs .who{flex:0 0 8.5rem;color:var(--texto-3);font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.vs .them{color:var(--texto-2)}
+.vs li.us .who{color:var(--sinal)}
+.vs li.us .them{color:var(--texto);font-weight:500}
+
+/* ── steps ──────────────────────────────────────────────────────────── */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s}
+.step{border-top:2px solid var(--linha-forte);padding-top:20px}
+.step:first-child{border-top-color:var(--sinal)}
+.step h3{font-size:1.02rem;margin-bottom:8px}
+.step p{font-size:.9rem}
+
+/* ── qualification ──────────────────────────────────────────────────
+   Inherited from the sector prototype and kept deliberately: with WhatsApp
+   as the primary CTA the friction is near zero, and a page that filters
+   nobody hands the sales team a list nobody wants to call. */
+.qual{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.qcol{border:1px solid var(--linha);border-radius:var(--r);padding:30px 32px;background:var(--fundo-eleva);box-shadow:var(--sombra-1)}
+.qcol.yes{border-color:var(--sinal-linha);background:linear-gradient(180deg,var(--sinal-fundo),transparent 34%),var(--fundo-eleva)}
+.qcol h3{margin-bottom:18px}
+.qcol ul{list-style:none}
+.qcol li{font-size:.93rem;color:var(--texto-2);padding:8px 0 8px 26px;position:relative}
+.qcol li::before{content:"—";position:absolute;left:0;top:8px;color:var(--texto-fraco)}
+.qcol.yes li::before{content:"✓";color:var(--sinal)}
+
+/* ── faq ────────────────────────────────────────────────────────────── */
+.faq details{border-top:1px solid var(--linha)}
+.faq details:last-of-type{border-bottom:1px solid var(--linha)}
+.faq summary{padding:20px 0;cursor:pointer;font-size:.98rem;font-weight:500;list-style:none;display:flex;justify-content:space-between;gap:20px;transition:color 200ms ease}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{
+  content:'';flex:none;width:13px;height:13px;margin-top:.34em;
+  background:
+    linear-gradient(var(--sinal),var(--sinal)) center/100% 1.5px no-repeat,
+    linear-gradient(var(--sinal),var(--sinal)) center/1.5px 100% no-repeat;
+  transition:background-size 320ms var(--ease-out),transform 320ms var(--ease-out);
+}
+.faq details[open] summary::after{background-size:100% 1.5px,1.5px 0;transform:rotate(180deg)}
+.faq summary:hover{color:var(--sinal)}
+.faq .ans{padding:0 0 22px;max-width:72ch;font-size:.93rem;color:var(--texto-2)}
+
+/* ── form ───────────────────────────────────────────────────────────── */
+.contact{background:var(--fundo-alt);border-top:1px solid var(--linha)}
+.cgrid{display:grid;grid-template-columns:.85fr 1.15fr;gap:60px;align-items:start}
+form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.f-full{grid-column:1/-1}
+label{display:block;font-size:.75rem;color:var(--texto-3);margin-bottom:6px}
+input,select,textarea{width:100%;background:var(--papel-0);border:1px solid var(--linha-forte);border-radius:var(--r);padding:11px 13px;color:var(--texto);font-family:inherit;font-size:.9rem}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sinal);box-shadow:0 0 0 3px var(--sinal-fundo)}
+textarea{resize:vertical;min-height:88px}
+.cinfo{border-top:1px solid var(--linha);padding-top:22px;margin-top:26px}
+.cinfo div{margin-bottom:14px}
+.cinfo span{display:block;font-size:.73rem;color:var(--texto-3);margin-bottom:2px}
+.fnote{grid-column:1/-1;font-size:.78rem;color:var(--texto-3)}
+/* Honeypot. Not display:none — some autofillers and bots skip hidden inputs
+   but happily fill one that is merely off-canvas. */
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+/* ── closing band ───────────────────────────────────────────────────── */
+.cta-band{padding:44px;border:1px solid var(--sinal-linha);border-radius:var(--r);background:var(--sinal-fundo);
+  display:flex;justify-content:space-between;align-items:center;gap:26px;flex-wrap:wrap}
+.cta-band h3{font-size:clamp(1.3rem,2.4vw,1.9rem);max-width:22ch}
+.cta-band .ctas{display:flex;gap:12px;flex-wrap:wrap}
+
+/* ── footer ─────────────────────────────────────────────────────────
+   LP-ONLY. No sitemap: the sector page's footer offers eleven ways out and
+   this page has one job. What stays is the legal minimum. */
+footer{border-top:1px solid var(--linha);padding:40px 0 34px}
+.fbot{display:flex;justify-content:space-between;gap:16px;font-size:.78rem;color:var(--texto-3);flex-wrap:wrap;align-items:center}
+
+/* ── mobile sticky CTA ───────────────────────────────────────────────
+   LP-ONLY. The brief wants both CTAs reachable without scrolling. On desktop
+   the header pill does it; on a phone the header only has room for one, so
+   the pair moves to the bottom, where the thumb is. A bar, not a pop-up —
+   it never covers content it doesn't own. */
+.sticky{
+  display:none;position:fixed;z-index:190;left:0;right:0;bottom:0;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));gap:10px;
+  background:rgba(250,247,242,.90);
+  -webkit-backdrop-filter:blur(20px) saturate(140%);backdrop-filter:blur(20px) saturate(140%);
+  border-top:1px solid var(--linha);
+}
+.sticky .btn{flex:1 1 0;justify-content:center}
+
+@media (hover:hover) and (pointer:fine){
+  .case:hover .phbox img{transform:scale(1.02)}
+  .phbox img{transition:transform 600ms var(--ease-out)}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .btn:active,.cbtn:active{transform:none}
+  .phbox img{transition:none}
+  .case:hover .phbox img{transform:none}
+  .hero .scroll-cue .rail::after{animation:none;top:0;height:38px;opacity:.7}
+}
+
+@media(max-width:1000px){
+  .comps,.steps{grid-template-columns:1fr 1fr}
+  .posgrid,.qual,.cgrid,form{grid-template-columns:1fr}
+  .posgrid{gap:34px}
+  .case{flex:0 0 84%;aspect-ratio:3/4}
+  .cbody{padding:24px 22px;max-width:none}
+  .shead{flex-direction:column;align-items:flex-start;gap:18px}
+  .sec{padding:64px 0}
+  .sec.tight{padding:48px 0}
+  header{width:calc(100% - 24px);top:12px}
+  header .wrap{padding:0 8px 0 20px}
+  .hero .wrap{width:calc(100% - 24px);padding:0 21px}
+  /* the header keeps the call; WhatsApp moves to the sticky bar */
+  header .navr .btn-wa{display:none}
+  .sticky{display:flex}
+  /* clearance so the bar never sits on top of the submit button */
+  body{padding-bottom:76px}
+  .cta-band{padding:32px 26px}
+}
+@media(max-width:620px){
+  .comps,.steps{grid-template-columns:1fr}
+  .hero .ctas .btn{flex:1 1 100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <span class="logo">VIRI<span>ATO</span></span>
+    <div class="navr">
+      <a href="#contact" class="btn btn-s btn-sm" data-cta="call">Book a call</a>
+      <a href="#" class="btn btn-wa btn-sm" data-cta="whatsapp">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.4.4-.5.1-.2.2-.3.3-.5v-.5c-.1-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.2-.5-.4zM12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.4c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
+        WhatsApp
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     HERO
+     The H1 has to contain the words that bought the click. The keyword
+     round found the German auction sells on component language —
+     "architectural visualisation", "3d rendering services" — while the
+     solution words ("neubauprojekt vermarktung") have zero volume. So the
+     headline enters on the component and the subtitle turns it into the
+     launch. Lead with "we sell your development" and the visualisation
+     click doesn't recognise itself and leaves.
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="bg"><div class="phbox">Opening film — featured development</div></div>
+  <div class="veil"></div>
+  <div class="wrap">
+    <h1>Architectural visualisation for developers who have to sell.</h1>
+    <p class="sub">Images, films, virtual tours and the sales website — one team, one launch, positioned before anything is drawn.</p>
+    <div class="ctas">
+      <a href="#" class="btn btn-wa" data-cta="whatsapp">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.4.4-.5.1-.2.2-.3.3-.5v-.5c-.1-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.2-.5-.4zM12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.4c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
+        Message us on WhatsApp
+      </a>
+      <a href="#contact" class="btn btn-s" data-cta="call">Book a diagnostic call</a>
+    </div>
+  </div>
+  <a href="#work" class="scroll-cue" aria-label="See the work"><span class="rail"></span>See the work</a>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     CLIENTS — proof without numbers, which is the only proof authorised
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="clients">
+  <div class="wrap">
+    <span class="lbl">Developments produced for</span>
+    <span class="name">VA Properties</span>
+    <span class="name">Vanguard Properties</span>
+    <span class="name">UP Investments</span>
+    <span class="name">Farimóvel</span>
+    <span class="name ph">⟨further developer, with permission⟩</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     WORK — the argument. Cards are filled from dados.js at the bottom;
+     the markup below is the fallback that shows when no media is present.
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="sec" id="work">
+  <div class="wrap">
+    <div class="shead">
+      <div>
+        <div class="eyebrow">Selected work</div>
+        <h2>The building, before the building.</h2>
+      </div>
+      <div class="sheadr">
+        <div class="cnav">
+          <button class="cbtn" data-dir="-1" aria-label="Previous">←</button>
+          <button class="cbtn" data-dir="1" aria-label="Next">→</button>
+        </div>
+      </div>
+    </div>
+    <div class="cases" id="work-rail">
+      <div class="case">
+        <div class="phbox">Development 01</div>
+        <div class="cbody"><h3 class="ph">⟨Development⟩</h3><div class="cmeta"><span class="ph">⟨Location⟩</span></div></div>
+      </div>
+      <div class="case">
+        <div class="phbox">Development 02</div>
+        <div class="cbody"><h3 class="ph">⟨Development⟩</h3><div class="cmeta"><span class="ph">⟨Location⟩</span></div></div>
+      </div>
+      <div class="case">
+        <div class="phbox">Development 03</div>
+        <div class="cbody"><h3 class="ph">⟨Development⟩</h3><div class="cmeta"><span class="ph">⟨Location⟩</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     COMPONENTS — named in the language people search in
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="sec tight" style="border-top:1px solid var(--linha)">
+  <div class="wrap">
+    <div class="shead">
+      <div>
+        <div class="eyebrow">What you get</div>
+        <h2>Everything the launch needs, from one team.</h2>
+      </div>
+    </div>
+    <div class="comps">
+      <div class="compc">
+        <div class="thumb" data-slot="imagens"><div class="phbox">3D visualisation</div></div>
+        <div class="body">
+          <h3>3D visualisation</h3>
+          <p>Exteriors, interiors and aerials. CGI and photography under one art direction, so the campaign doesn't look like two suppliers.</p>
+        </div>
+      </div>
+      <div class="compc">
+        <div class="thumb" data-slot="identidade"><div class="phbox">Identity &amp; brochure</div></div>
+        <div class="body">
+          <h3>Identity &amp; print</h3>
+          <p>Name, identity, floor plans, brochure and site hoardings — the development as a product, not a plot number.</p>
+        </div>
+      </div>
+      <div class="compc">
+        <div class="thumb" data-slot="visitas"><div class="phbox">Virtual tour</div></div>
+        <div class="body">
+          <h3>Virtual tours</h3>
+          <p>The buyer walks the unit before it exists. Built for a sales meeting and for a link sent at a distance.</p>
+        </div>
+      </div>
+      <div class="compc">
+        <div class="thumb" data-slot="website"><div class="phbox">Sales website</div></div>
+        <div class="body">
+          <h3>Sales website</h3>
+          <p>Website and landing pages wired to the enquiry, so the material and the sale are the same system.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     POSITIONING — the crossing nobody claims
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="sec pos">
+  <div class="wrap posgrid">
+    <div>
+      <div class="eyebrow">Why us</div>
+      <h2>Studios sell images. Agencies sell brands.</h2>
+      <ul class="vs">
+        <li><span class="who">A studio</span><span class="them">Gives you beautiful renders, and stops there.</span></li>
+        <li><span class="who">An agency</span><span class="them">Gives you a brand, then briefs the renders out.</span></li>
+        <li class="us"><span class="who">Viriato</span><span class="them">Decides the positioning, then produces every piece against it.</span></li>
+      </ul>
+    </div>
+    <div>
+      <p>A render that is technically perfect and commercially wrong is an expensive picture. The decision that makes it work — who this development is for, what it is worth, why someone buys here and not two streets away — is taken before anything is modelled.</p>
+      <p>That is the part neither a visualisation studio nor a branding agency is accountable for. We take it first, and then produce the images, the film, the tour and the website against that one decision. One team, one direction, no handover where the argument gets lost.</p>
+      <p>It is also why we are not the cheap option, and not trying to be. If what you need is one render by Friday, there are faster and cheaper places to get it — and we will say so on the first call.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     FORM — mid-page and repeated at the close. Insca runs the form before
+     the technical proof in all five languages; the qualification lives in
+     the fields, not in a follow-up call.
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="sec contact" id="contact">
+  <div class="wrap cgrid">
+    <div>
+      <div class="eyebrow">Talk to us</div>
+      <h2 style="margin-bottom:16px">Tell us about the development.</h2>
+      <p>We will come back with an honest read on whether we are the right team for it — and if we are not, who is.</p>
+      <div class="cinfo">
+        <div><span>WhatsApp</span><span class="ph">⟨number — pending⟩</span></div>
+        <div><span>Email</span><span class="ph">⟨sales email⟩</span></div>
+        <div><span>Answered by</span><span class="ph">⟨name · role · response-time commitment⟩</span></div>
+      </div>
+    </div>
+    <form data-form="lead">
+      <div><label for="f-name">Name*</label><input id="f-name" name="name" required autocomplete="name"></div>
+      <div><label for="f-company">Company*</label><input id="f-company" name="company" required autocomplete="organization"></div>
+      <div><label for="f-email">Work email*</label><input id="f-email" name="email" type="email" required autocomplete="email"></div>
+      <div><label for="f-phone">Phone / WhatsApp</label><input id="f-phone" name="phone" type="tel" autocomplete="tel"></div>
+      <!-- Role is the field that keeps the cheap clicks out of the sales team's
+           inbox. The English service terms in Germany attract architects,
+           freelancers and students looking for work; asking outright costs
+           nothing and sorts them at the door. -->
+      <div><label for="f-role">Your role</label>
+        <select id="f-role" name="role">
+          <option value="">Select</option>
+          <option>Developer / Bauträger</option>
+          <option>Project manager</option>
+          <option>Marketing / sales lead</option>
+          <option>Architect</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div><label for="f-country">Country of the project</label><input id="f-country" name="country" placeholder="Germany, Portugal, …"></div>
+      <div class="f-full"><label for="f-dev">Development &amp; location</label><input id="f-dev" name="development" placeholder="Project name, city"></div>
+      <div><label for="f-units">Units</label>
+        <select id="f-units" name="units">
+          <option value="">Select</option>
+          <option>Up to 20</option>
+          <option>20–50</option>
+          <option>50–150</option>
+          <option>More than 150</option>
+        </select>
+      </div>
+      <div><label for="f-stage">Current stage</label>
+        <select id="f-stage" name="stage">
+          <option value="">Select</option>
+          <option>In design</option>
+          <option>Permitted</option>
+          <option>Under construction</option>
+          <option>Already selling</option>
+        </select>
+      </div>
+      <!-- Time horizon is the hardest qualifier there is, and it is one select. -->
+      <div class="f-full"><label for="f-when">Launch horizon</label>
+        <select id="f-when" name="horizon">
+          <option value="">Select</option>
+          <option>Under 3 months</option>
+          <option>3–6 months</option>
+          <option>6–12 months</option>
+          <option>More than 12 months</option>
+          <option>No date yet</option>
+        </select>
+      </div>
+      <div class="f-full"><label for="f-need">What do you need to solve?</label><textarea id="f-need" name="need" placeholder="In two lines: what is the commercial problem with this launch?"></textarea></div>
+      <div class="hp"><label for="f-website">Leave this empty</label><input id="f-website" name="website" tabindex="-1" autocomplete="off"></div>
+      <div class="f-full"><button class="btn btn-p" style="width:100%;justify-content:center">Request a diagnosis</button></div>
+      <p class="fnote ph">⟨privacy line + link to the privacy policy — required before this page takes a single submission⟩</p>
+    </form>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PROCESS
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="sec tight">
+  <div class="wrap">
+    <div class="shead">
+      <div>
+        <div class="eyebrow">How it works</div>
+        <h2>Four steps, one team.</h2>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="num">01</span>
+        <h3>Diagnosis</h3>
+        <p>A call about the development and the sales problem — not about renders. Free, and it ends with a straight answer.</p>
+      </div>
+      <div class="step">
+        <span class="num">02</span>
+        <h3>Positioning</h3>
+        <p>Who buys here, what it is worth, and what the development has to say. Everything after this is produced against it.</p>
+      </div>
+      <div class="step">
+        <span class="num">03</span>
+        <h3>Production</h3>
+        <p>Images, identity, print, tours and website, produced in one place to one direction.</p>
+      </div>
+      <div class="step">
+        <span class="num">04</span>
+        <h3>Launch</h3>
+        <p>Everything lands together, on the date. <span class="ph">⟨typical timeline per solution — to confirm with production⟩</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     QUALIFICATION
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="sec" style="background:var(--fundo-alt);border-top:1px solid var(--linha)">
+  <div class="wrap">
+    <div class="shead">
+      <div>
+        <div class="eyebrow">Fit</div>
+        <h2>We are worth your time if…</h2>
+      </div>
+    </div>
+    <div class="qual">
+      <div class="qcol yes">
+        <h3>This is for you</h3>
+        <ul>
+          <li>You are the developer, or you decide the marketing for one.</li>
+          <li>The development is <span class="ph">⟨minimum unit threshold — commercial decision⟩</span> units or more.</li>
+          <li>There is a launch date, or one is being set.</li>
+          <li>Someone is named to answer enquiries when they arrive.</li>
+          <li>You want the launch solved, not one deliverable bought.</li>
+        </ul>
+      </div>
+      <div class="qcol">
+        <h3>This is not</h3>
+        <ul>
+          <li>You need a single render, quickly and cheaply.</li>
+          <li>You are an architect looking for a competition image.</li>
+          <li>The development is already selling and the material exists.</li>
+          <li>Nobody is going to follow up the enquiries.</li>
+          <li>You want to buy by the piece, from a rate card.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     FAQ
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="sec tight">
+  <div class="wrap">
+    <div class="shead"><div><h2>Questions developers ask.</h2></div></div>
+    <div class="faq">
+      <details>
+        <summary>You are in Portugal. How does that work for a project in Germany?</summary>
+        <div class="ans ph">⟨How remote production actually runs, and what needs to happen on site and when — operations to confirm before this page takes German traffic.⟩</div>
+      </details>
+      <details>
+        <summary>Do you work with our estate agent, or replace them?</summary>
+        <div class="ans">We work with them. The material serves whoever sells — your own team or an agency. We only ask that one person owns the enquiries.</div>
+      </details>
+      <details>
+        <summary>We only need images. Is it worth talking to you?</summary>
+        <div class="ans">Probably not. We do produce images, but the value is in solving the whole launch. For a single deliverable there are faster and cheaper studios, and we would rather say that now than on invoice.</div>
+      </details>
+      <details>
+        <summary>How long until we have material live?</summary>
+        <div class="ans ph">⟨Real timelines per solution — production.⟩</div>
+      </details>
+      <details>
+        <summary>Do we own the files?</summary>
+        <div class="ans ph">⟨File ownership, 3D sources and image licensing — direction.⟩</div>
+      </details>
+      <details>
+        <summary>What does it cost?</summary>
+        <div class="ans">Budgeted per development, against size, unit mix and calendar. We do not work from a per-piece rate card — the scope of a 20-unit launch and a 200-unit one have almost nothing in common.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     CLOSE — the CTA pair repeated, as the research says it should be
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="sec tight">
+  <div class="wrap">
+    <div class="cta-band">
+      <h3>Have a development to launch?</h3>
+      <div class="ctas">
+        <a href="#" class="btn btn-wa" data-cta="whatsapp">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.4.4-.5.1-.2.2-.3.3-.5v-.5c-.1-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.2-.5-.4zM12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.4c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
+          WhatsApp
+        </a>
+        <a href="#contact" class="btn btn-p" data-cta="call">Book a diagnostic call</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap fbot">
+    <span>© 2026 Viriato</span>
+    <span><a href="#" class="ph">⟨Privacy⟩</a> · <a href="#" class="ph">⟨Cookies⟩</a></span>
+  </div>
+</footer>
+
+<!-- mobile only -->
+<div class="sticky">
+  <a href="#contact" class="btn btn-s" data-cta="call">Book a call</a>
+  <a href="#" class="btn btn-wa" data-cta="whatsapp">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.4.4-.5.1-.2.2-.3.3-.5v-.5c-.1-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.2-.5-.4zM12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.4c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
+    WhatsApp
+  </a>
+</div>
+
+<script src="https://unpkg.com/lenis@1/dist/lenis.min.js"></script>
+<script src="dados.js"></script>
+<script>
+/* ---- smooth scroll (Lenis) ---- */
+const reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let lenis=null;
+if(!reduced&&window.Lenis){
+  lenis=new Lenis({duration:1.1,easing:t=>Math.min(1,1.001-Math.pow(2,-10*t))});
+  const raf=t=>{lenis.raf(t);requestAnimationFrame(raf)};
+  requestAnimationFrame(raf);
+}
+function smoothScrollTo(target){
+  if(lenis)lenis.scrollTo(target);
+  else target.scrollIntoView({behavior:reduced?'auto':'smooth'});
+}
+/* Horizontal gestures inside the carousel must reach the browser, not Lenis. */
+document.querySelectorAll('.cases').forEach(track=>{
+  track.addEventListener('wheel',e=>{
+    if(Math.abs(e.deltaX)>Math.abs(e.deltaY))e.stopPropagation();
+  },{capture:true});
+});
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  const sel=a.getAttribute('href');
+  if(sel==='#')return;
+  a.addEventListener('click',e=>{
+    const target=document.querySelector(sel);
+    if(!target)return;
+    e.preventDefault();
+    smoothScrollTo(target);
+  });
+});
+
+/* ---- FAQ: <details> doesn't animate on its own ---- */
+document.querySelectorAll('.faq details').forEach(d=>{
+  const summary=d.querySelector('summary'),panel=d.querySelector('.ans');
+  if(!summary||!panel)return;
+  summary.addEventListener('click',e=>{
+    if(reduced)return;
+    e.preventDefault();
+    if(d.dataset.busy)return;
+    d.dataset.busy='1';
+    const opening=!d.open;
+    if(opening)d.open=true;
+    const full=panel.getBoundingClientRect().height;
+    const pad=getComputedStyle(panel).paddingBottom;
+    panel.style.overflow='hidden';
+    const anim=panel.animate({
+      height:opening?['0px',full+'px']:[full+'px','0px'],
+      paddingBottom:opening?['0px',pad]:[pad,'0px'],
+      opacity:opening?[0,1]:[1,0]
+    },{duration:opening?340:250,easing:'cubic-bezier(.23,1,.32,1)',fill:'forwards'});
+    anim.onfinish=()=>{
+      if(!opening)d.open=false;
+      anim.cancel();
+      panel.style.overflow='';panel.style.height='';panel.style.paddingBottom='';
+      delete d.dataset.busy;
+    };
+  });
+});
+
+/* ---- carousel arrows ---- */
+document.querySelectorAll('.cbtn').forEach(b=>b.onclick=()=>{
+  const track=b.closest('section').querySelector('.cases');
+  const slide=track.querySelector('.case');
+  if(!slide)return;
+  track.scrollBy({left:(slide.getBoundingClientRect().width+16)*Number(b.dataset.dir),behavior:'smooth'});
+});
+
+/* ---- CTAs ------------------------------------------------------------
+   Placeholders on purpose, and loud about it. A wa.me link needs a real
+   number and a real person behind it; the vault has had "who answers
+   WhatsApp, and how fast" open as a launch blocker since 10/08. Wiring a
+   plausible-looking number here would hide that, and could send a stranger
+   a message. Same for the booking link. Both stay dead until the number,
+   the owner and the response-time commitment exist.
+   ------------------------------------------------------------------- */
+document.querySelectorAll('[data-cta="whatsapp"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    alert('Prototype — the WhatsApp number and the person answering it are still to be set.');
+  });
+});
+
+/* ---- form ---- */
+const form=document.querySelector('[data-form="lead"]');
+if(form)form.addEventListener('submit',e=>{
+  e.preventDefault();
+  alert('Prototype — the form does not submit. Server-side handover to the CRM still to be built.');
+});
+
+/* ═══════════════════════════════════════════════════════════════════════
+   DATA → PAGE
+   Same contract as the sector prototype: a slot is only replaced when the
+   file actually exists. No dados.js, empty PROJETOS or missing media and
+   the placeholder stays — the page never shows a broken image.
+   ═══════════════════════════════════════════════════════════════════════ */
+const DADOS=(typeof PROJETOS!=='undefined'&&PROJETOS)||[];
+const CFG=(typeof SETOR!=='undefined'&&SETOR)||{};
+
+function pintar(box,src,m34,alt){
+  if(!box||!src)return false;
+  const pic=document.createElement('picture');
+  if(m34){const s=document.createElement('source');s.media='(max-width:1000px)';s.srcset=m34;pic.appendChild(s)}
+  const i=document.createElement('img');
+  i.src=src;i.alt=alt||'';i.loading='lazy';i.decoding='async';
+  pic.appendChild(i);
+  box.classList.add('tem-media');box.textContent='';box.appendChild(pic);
+  return true;
+}
+const CODEC={av1:'video/mp4; codecs="av01.0.09M.08"',h264:'video/mp4; codecs="avc1.640028"'};
+const olhoVideo=new IntersectionObserver(es=>es.forEach(e=>{
+  if(reduced)return;
+  if(e.isIntersecting)e.target.play().catch(()=>{});
+  else e.target.pause();
+}),{threshold:.25});
+function pintarVideo(box,fontes,poster,alt){
+  const uteis=fontes.filter(f=>f&&f.src);
+  if(!box||!uteis.length)return false;
+  const v=document.createElement('video');
+  v.muted=v.loop=v.playsInline=true;
+  v.setAttribute('aria-label',alt||'');
+  v.preload='metadata';
+  if(poster)v.poster=poster;
+  uteis.forEach(f=>{const s=document.createElement('source');s.src=f.src;s.type=f.type;v.appendChild(s)});
+  box.classList.add('tem-media');box.textContent='';box.appendChild(v);
+  olhoVideo.observe(v);
+  return true;
+}
+
+/* ── hero ── */
+(function(){
+  const box=document.querySelector('.hero .bg .phbox');
+  if(!box)return;
+  if(CFG.heroVideo){
+    const v=document.createElement('video');
+    v.autoplay=v.muted=v.loop=v.playsInline=true;
+    if(CFG.heroPoster)v.poster=CFG.heroPoster;
+    if(CFG.heroWebm){const s=document.createElement('source');s.src=CFG.heroWebm;s.type='video/webm';v.appendChild(s)}
+    const s=document.createElement('source');s.src=CFG.heroVideo;s.type='video/mp4';v.appendChild(s);
+    box.classList.add('tem-media');box.textContent='';box.appendChild(v);
+  } else pintar(box,CFG.heroPoster,CFG.heroPoster34,'');
+})();
+
+/* ── work rail ──
+   Everything marked as an image project, deduplicated by slug. No case
+   pages on a campaign page, so the cards are <div> and not <a>: a card that
+   looks clickable and goes nowhere costs more than a card that doesn't. */
+(function(){
+  const track=document.getElementById('work-rail');
+  if(!track)return;
+  const lista=DADOS.filter(p=>p.aparece_em&&p.aparece_em.imagens&&p.media&&p.media.card16);
+  if(!lista.length)return;                 // no data: the three examples stay
+  track.textContent='';
+  lista.forEach(p=>{
+    const el=document.createElement('div');
+    el.className='case';
+    el.innerHTML='<div class="phbox"></div><div class="cbody"><h3></h3><div class="cmeta"><span></span></div></div>';
+    el.querySelector('h3').textContent=p.nome||p.slug;
+    el.querySelector('.cmeta span').textContent=[p.localizacao,(p.ficha||{}).promotor].filter(Boolean).join(' · ');
+    pintar(el.querySelector('.phbox'),p.media.card16,p.media.card34,p.nome);
+    track.appendChild(el);
+  });
+})();
+
+/* ── component thumbnails ──
+   Each card borrows the first development that carries that component. The
+   virtual tour takes its video, for the same reason the sector page does:
+   the movement is the piece. */
+(function(){
+  document.querySelectorAll('.compc .thumb').forEach(slot=>{
+    const tipo=slot.dataset.slot;
+    const p=DADOS.find(x=>x.aparece_em&&x.aparece_em[tipo]);
+    if(!p)return;
+    const m=p.media||{},box=slot.querySelector('.phbox');
+    const proprio={identidade:['ident16','ident34'],website:['web16','web34']}[tipo];
+    const c16=(proprio&&m[proprio[0]])?m[proprio[0]]:m.card16;
+    const c34=(proprio&&m[proprio[1]])?m[proprio[1]]:m.card34;
+    const FILME={visitas:{av1:m.visitaAv1,h264:m.visitaMp4,poster:m.visitaPoster},
+                 identidade:{av1:m.identAv1,h264:m.identMp4}}[tipo];
+    const video=FILME&&pintarVideo(box,
+      [{src:FILME.av1,type:CODEC.av1},{src:FILME.h264,type:CODEC.h264}],
+      FILME.poster||c16,p.nome);
+    if(!video)pintar(box,c16,c34,p.nome);
+  });
+})();
+</script>
+</body>
+</html>

@@ -6,19 +6,26 @@ Ficheiro único, sem build: `index.html` + `dados.js` + `media/`.
 Ao ar: <https://viriato-prototipo-imobiliario.vercel.app> (projeto Vercel
 `viriato-prototipo-imobiliario`, `noindex` por omissão).
 
-## ⚠️ O que está aqui hoje
+## ⚠️ Duas páginas, e não se fundem
 
-O que está neste repositório é o **protótipo da página de setor permanente**
-(`/setores/imobiliario`, v0.2, *work-first*) — nav completa, três vistas
-(setor · caso de estudo · sobre), barra de salto, tiers, motor de procura.
+| | `index.html` | `lp-en.html` |
+|---|---|---|
+| O que é | Protótipo da **página de setor permanente** (`/setores/imobiliario`, v0.2) | **Landing da campanha paga**, Alemanha, inglês |
+| Tráfego | Orgânico e referência | Só pago — Google Search DE + Meta DE |
+| Navegação | Completa, três vistas, barra de salto | Nenhuma. Um só caminho |
+| CTA | Formulário de diagnóstico | WhatsApp (primário) + chamada de diagnóstico |
+| Tiers | Três perfis de promotor | Não tem — demasiado para uma LP |
+| Índice | Indexável | `noindex, nofollow` |
 
-**Não é** a landing page da campanha paga de agosto. Essa é outra página, com
-outras regras: fora do menu, navegação reduzida, um só caminho, CTA de WhatsApp
-+ chamada de diagnóstico, sem tiers, sem motor de procura, em PT-PT e EN.
-As duas não se fundem — canibalizam-se em SEO.
+Atacam os mesmos termos: se as duas ficarem indexadas, canibalizam-se. Daí o
+`noindex` na LP, reforçado pelo cabeçalho que o `publicar.sh` escreve.
+
+A instância **PT-PT ainda não existe** e é a próxima coisa a fazer — sem ela o
+Meta·Portugal, que é ~40% do orçamento do imobiliário, não tem onde aterrar.
 
 Contexto e decisões no vault: `WORK/Clients/Viriato/` →
 `decisions/2026-07-28-estrutura-pagina-imobiliario.md`,
+`decisions/2026-08-13-estrutura-lp-imobiliario-campanha.md`,
 `paid-advertising/imobiliario-pt-de-campaign.md` e
 `tasks/propor-landing-pages-campanhas.md`.
 
@@ -26,10 +33,11 @@ Contexto e decisões no vault: `WORK/Clients/Viriato/` →
 
 | Ficheiro | O que é |
 |---|---|
-| `index.html` | A página inteira — markup, estilos e comportamento |
-| `dados.js` | Conteúdo: `SETOR` (a página) + `PROJETOS` (os empreendimentos) |
-| `SPEC.md` | Especificação para o developer: arquitetura, tokens, SEO, conteúdo em falta |
-| `tokens-papel.html` | Referência visual do sistema de tokens |
+| `index.html` | Página de setor — markup, estilos e comportamento |
+| `lp-en.html` | Landing de campanha EN — idem, e partilha o `dados.js` |
+| `dados.js` | Conteúdo: `SETOR` (o hero) + `PROJETOS` (os empreendimentos) |
+| `SPEC.md` | Especificação da página de setor. ⚠️ §7 descreve o tema escuro de 2027; a página está em «papel» desde 11/08 e a spec ainda não foi atualizada |
+| `tokens-papel.html` | Referência visual do sistema de tokens em uso |
 | `publicar.sh` | Monta a pasta de deploy a partir do `dados.js` e publica na Vercel |
 | `media/*.sh` | Geradores: novo projeto, recortes canónicos, entradas do `dados.js` |
 

@@ -28,7 +28,10 @@ SAIDA="${TMPDIR:-/tmp}/$PROJETO"
 EXCLUIR=( "media/projetos/va-villa-heaven-vale-do-lobo/visita/visita.av1.mp4" )
 
 rm -rf "$SAIDA"; mkdir -p "$SAIDA"
-cp index.html "$SAIDA/"
+# index.html é o protótipo da página de setor; lp-en.html é a landing da
+# campanha paga (Alemanha, inglês). Partilham o dados.js e, portanto, o mesmo
+# conjunto de media — por isso sobem juntas e o cálculo abaixo não muda.
+cp index.html lp-en.html "$SAIDA/"
 
 EXCLUIR_STR="$(printf '%s\n' "${EXCLUIR[@]}")" python3 - "$SAIDA" <<'PY'
 # -*- coding: utf-8 -*-
