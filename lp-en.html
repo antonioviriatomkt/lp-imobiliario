@@ -289,28 +289,39 @@ section{position:relative}
    The one prose block on the page, and it earns its place: the keyword
    research found that German studios sell aesthetics and German agencies
    sell branding, and nobody claims the crossing. This section is the claim. */
-.posgrid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
-.posgrid h2{max-width:16ch}
-.posgrid p{font-size:1.05rem;margin-bottom:16px}
-.posgrid p:last-child{margin-bottom:0}
-/* As três linhas eram separadas por filetes. Sem eles, o que as separa é o
-   espaço — daí o salto de 14px para 20px de padding — e o que as agrupa é a
-   coluna de rótulos alinhada à esquerda. */
-.vs{list-style:none;margin-top:24px}
-.vs li{display:flex;gap:16px;padding:20px 0;font-size:.94rem;align-items:baseline}
-.vs .who{flex:0 0 8.5rem;color:var(--texto-3);font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+/* A comparação é o argumento comercial inteiro da empresa e estava a viver
+   numa lista sem estilo, em meia coluna, com três parágrafos ao lado a puxar o
+   olho. Passa a ser a secção: largura toda, escala a sério.
+
+   E as três linhas não são três de três — são duas coisas e depois outra. Por
+   isso a terceira não muda de tom, muda de matéria: ganha superfície, como os
+   cartões do resto da página. O padding lateral das duas primeiras iguala o do
+   cartão, para as três colunas de rótulos ficarem a prumo. */
+.vs{list-style:none;margin-top:6px}
+.vs li{display:grid;grid-template-columns:11rem 1fr;gap:28px;align-items:baseline;
+  padding:24px 30px;font-size:1.06rem}
+.vs .who{color:var(--texto-3);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
 .vs .them{color:var(--texto-2)}
+.vs li.us{background:var(--fundo-eleva);border-radius:var(--r);box-shadow:var(--sombra-2);
+  margin-top:12px;padding-top:30px;padding-bottom:30px}
 .vs li.us .who{color:var(--sinal)}
-.vs li.us .them{color:var(--texto);font-weight:500}
+.vs li.us .them{color:var(--texto);font-weight:500;font-size:1.2rem}
 
 /* ── steps ──────────────────────────────────────────────────────────── */
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-/* Os quatro passos eram marcados por uma regra de 2px, com a primeira em
-   terracota. Saiu com os filetes; o número fica a fazer o trabalho, e o acento
-   muda-se de linha para algarismo — mesmo sinal, sem desenhar uma régua. */
+/* A régua de 2px que marcava os quatro passos saiu com os filetes, e com ela
+   foi-se o sinal de que aquilo é uma sequência: ficaram quatro colunas de texto
+   com um número pequeno e cinzento, que se lêem como quatro recados soltos.
+
+   Quem repõe a espinha é o algarismo, não uma linha nova — reintroduzir uma
+   régua agora desfazia a decisão de tirar todas. A escala grande torna a ordem
+   legível antes de se ler uma palavra, que é o que uma régua fazia e mais nada.
+
+   O terracota no 01 saiu: acentuar o primeiro passo dizia «está aqui», e numa
+   landing page isso não quer dizer nada. */
 .step{padding-top:4px}
-.step .num{font-size:.78rem}
-.step:first-child .num{color:var(--sinal)}
+.step .num{font-size:clamp(2.6rem,4vw,3.5rem);font-weight:300;letter-spacing:-.03em;
+  line-height:1;color:var(--texto-fraco);margin-bottom:14px;font-variant-numeric:tabular-nums}
 .step h3{font-size:1.02rem;margin-bottom:8px}
 .step p{font-size:.9rem}
 
@@ -468,8 +479,11 @@ footer{padding:24px 0 40px}
 
 @media(max-width:1000px){
   .comps,.steps{grid-template-columns:1fr 1fr}
-  .posgrid,.qual,.cgrid,form{grid-template-columns:1fr}
-  .posgrid{gap:34px}
+  .qual,.cgrid,form{grid-template-columns:1fr}
+  /* o rótulo sobe para cima da frase — 11rem de coluna num ecrã de 375px
+     deixava a frase a partir-se em duas palavras por linha */
+  .vs li{grid-template-columns:1fr;gap:6px;padding:20px 24px;font-size:1rem}
+  .vs li.us .them{font-size:1.08rem}
   .case{flex:0 0 84%;aspect-ratio:3/4}
   .cbody{padding:24px 22px;max-width:none}
   .shead{flex-direction:column;align-items:flex-start;gap:18px}
@@ -618,21 +632,23 @@ footer{padding:24px 0 40px}
      POSITIONING — the crossing nobody claims
      ══════════════════════════════════════════════════════════════════ -->
 <section class="sec pos">
-  <div class="wrap posgrid">
-    <div>
-      <div class="eyebrow">Why us</div>
-      <h2>Studios sell images. Agencies sell brands.</h2>
-      <ul class="vs">
-        <li><span class="who">A studio</span><span class="them">Gives you beautiful renders, and stops there.</span></li>
-        <li><span class="who">An agency</span><span class="them">Gives you a brand, then briefs the renders out.</span></li>
-        <li class="us"><span class="who">Viriato</span><span class="them">Decides the positioning, then produces every piece against it.</span></li>
-      </ul>
+  <div class="wrap">
+    <div class="shead">
+      <div>
+        <div class="eyebrow">Why us</div>
+        <h2>Studios sell images. Agencies sell brands.</h2>
+      </div>
+      <!-- Um parágrafo, não três. O segundo repetia em prosa a comparação que a
+           lista faz melhor, e o terceiro — «não somos a opção barata» — já vive
+           na FAQ, em «What does it cost?», onde aterra como resposta e não como
+           bravata. Isto acaba na frase que a comparação a seguir vai provar. -->
+      <p>A render that is technically perfect and commercially wrong is an expensive picture. The decision that makes it work — who this development is for, what it is worth, why someone buys here and not two streets away — is taken before anything is modelled. That is the part neither a studio nor an agency is accountable for.</p>
     </div>
-    <div>
-      <p>A render that is technically perfect and commercially wrong is an expensive picture. The decision that makes it work — who this development is for, what it is worth, why someone buys here and not two streets away — is taken before anything is modelled.</p>
-      <p>That is the part neither a visualisation studio nor a branding agency is accountable for. We take it first, and then produce the images, the film, the tour and the website against that one decision. One team, one direction, no handover where the argument gets lost.</p>
-      <p>It is also why we are not the cheap option, and not trying to be. If what you need is one render by Friday, there are faster and cheaper places to get it — and we will say so on the first call.</p>
-    </div>
+    <ul class="vs">
+      <li><span class="who">A studio</span><span class="them">Gives you beautiful renders, and stops there.</span></li>
+      <li><span class="who">An agency</span><span class="them">Gives you a brand, then briefs the renders out.</span></li>
+      <li class="us"><span class="who">Viriato</span><span class="them">Decides the positioning, then produces every piece against it.</span></li>
+    </ul>
   </div>
 </section>
 
