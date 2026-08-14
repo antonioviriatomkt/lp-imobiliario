@@ -85,9 +85,14 @@ PY
 
 # Protótipo de cliente: fora dos motores de busca. O media leva cache longa —
 # os nomes são estáveis, mas cada deploy serve ficheiros novos na mesma.
+#
+# cleanUrls: sem isto a Vercel não tira o .html, e a landing da campanha ficava
+# em /lp-en.html — que é o URL final de anúncios pagos e não pode ter extensão.
+# Com a opção ligada, /lp-en serve a página e /lp-en.html redirecciona (308).
 cat > "$SAIDA/vercel.json" <<'JSON'
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
   "headers": [
     { "source": "/(.*)",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] },
